@@ -6,12 +6,15 @@ import java.util.ArrayList;
 import hypermedia.video.Blob;
 import javax.media.jai.*;
 
+import processing.core.PImage;
+
 
 
 public class FieldModel {
 	private SheepTest parent;
 	private ArrayList<Point2D> sheepList = new ArrayList<Point2D>();
 	PerspectiveTransform sheepTransform;
+	PImage sheepImage;
 
 	public FieldModel(SheepTest parent){
 		this.parent = parent;
@@ -22,6 +25,7 @@ public class FieldModel {
 		p[2] = new Point(640,480);
 		p[3] = new Point(0,480);
 		setSheepTransform(new CalibrationQuad(p));
+		sheepImage = parent.loadImage("sheep.png");
 	}
 	
 	/*
@@ -40,8 +44,12 @@ public class FieldModel {
 		
 	}
 	
+	public void setSheepTransform(Point[] p){
+		setSheepTransform(new CalibrationQuad(p));
+	}
+	
 	/*
-	 * Maps all sheep coordinates from quad space to field space
+	 * Maps all sheep coordinates from camera space to field space
 	 */
 	public void setSheepTransform(CalibrationQuad quad){
 		sheepTransform = new PerspectiveTransform();
@@ -72,8 +80,9 @@ public class FieldModel {
 		parent.rect(0,0,800,600);
 		parent.fill(255,255,255);
 		for(Point2D p : sheepList){
-			parent.ellipse((float)p.getX(),(float)p.getY(),10,10);
 			
+			//parent.ellipse((float)p.getX(),(float)p.getY(),10,10);
+			parent.image(sheepImage, (float)p.getX(), (float)p.getY());
 		}
 		
 		parent.popStyle();

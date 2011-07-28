@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="lib" path="/Applications/Processing.app/Contents/Resources/Java/core.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/Users/tomwyatt/Documents/Processing/libraries/OpenCV/library"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/tomwyatt/Documents/Processing/libraries/OpenCV/library/OpenCV.jar"/>
+	<classpathentry kind="lib" path="/Users/tomwyatt/Documents/Processing/libraries/controlP5/library/controlP5.jar"/>
+	<classpathentry kind="lib" path="/Applications/Processing.app/Contents/Resources/Java/jna.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

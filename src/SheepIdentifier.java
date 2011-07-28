@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 import hypermedia.video.Blob;
 import hypermedia.video.OpenCV;
 import processing.core.PApplet;
@@ -13,6 +15,7 @@ public class SheepIdentifier {
 	public int maxBlobSize, minBlobSize;
 	private OpenCV opencv;
 	public int greenThreshLow, greenThreshHigh;
+	public ArrayList<Blob> sheepList = new ArrayList<Blob>();
 	
 	
 	public  SheepIdentifier(SheepTest p){
@@ -38,6 +41,7 @@ public class SheepIdentifier {
 	  //opencv.blur(OpenCV.BLUR, 6);                //  Blur to remove camera noise
 
 	  //opencv.threshold(thresh);
+	  opencv.blur(OpenCV.BLUR, 6);
 	  removeGreen(opencv.image());
 	  //image(removeGreenBuffer, 0,0);
 	  opencv.copy(removeGreenBuffer);
@@ -74,12 +78,14 @@ public class SheepIdentifier {
 	      int avgColor =  parent.color (avgRed,avgGreen,avgBlue);
 
 
-
+	      sheepList.clear();
 	      if(parent.saturation(avgColor) < sheepSaturationDetection) {      //this blob is a sheep as its colour saturation is low (close to white)
 	        /*textFont(myFont);
 	        fill(255,0,0);
 	        text("Sheep",  blobs[i].centroid.x, blobs[i].centroid.y + 20);*/
 	    	  //add this to the sheep list
+	    	sheepList.add(blobs[i]);
+	    	  
 	      }
 
 	      /*fill(avgColor);

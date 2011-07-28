@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Point;
 
 import processing.core.*;
 
@@ -14,6 +15,7 @@ public class SheepTest extends PApplet {
 	PImage frame;
 	
 	SheepIdentifier sheepFinder;
+	FieldModel fieldModel;
 
 	int thresh = 0;   //threshold value 
 	int minBlobSize = 10;
@@ -46,18 +48,19 @@ public class SheepTest extends PApplet {
 	  opencv.capture(640,480);
 	  
 	  sheepFinder = new SheepIdentifier(this);
+	  fieldModel = new FieldModel(this);
 	  //green removal buffer. Allocated once to save time
 	  
 
 	  controlP5 = new ControlP5(this);
-	  controlP5.addSlider("thresh",0,255,0,650,260,100,14).setId(4);
-	  controlP5.addSlider("minBlobSize",0,255,0,650,280,100,14).setId(1);
-	  controlP5.addSlider("maxBlobSize",0,1500,0,650,300,100,14).setId(2);
-	  controlP5.addSlider("colourSampleArea",0,30,0,650,320,100,14).setId(5);
-	  controlP5.addSlider("sheepSaturationDetection",0,255,0,650,360,100,14).setId(6);
-	  controlP5.addSlider("greenThreshLow",0,255,0,650,380,100,14).setId(7);
-	  controlP5.addSlider("greenThreshHigh",0,255,0,650,400,100,14).setId(8);
-	  controlP5.addBang("rememberbg",650,220, 20,20);
+	  controlP5.addSlider("thresh",0,255,0,20,160,100,14).setId(4);
+	  controlP5.addSlider("minBlobSize",0,255,0,20,180,100,14).setId(1);
+	  controlP5.addSlider("maxBlobSize",0,1500,0,20,200,100,14).setId(2);
+	  controlP5.addSlider("colourSampleArea",0,30,0,20,220,100,14).setId(5);
+	  controlP5.addSlider("sheepSaturationDetection",0,255,0,20,260,100,14).setId(6);
+	  controlP5.addSlider("greenThreshLow",0,255,0,20,280,100,14).setId(7);
+	  controlP5.addSlider("greenThreshHigh",0,255,0,20,300,100,14).setId(8);
+	  //controlP5.addBang("rememberbg",20,220, 20,20);
 
 	  maxBlobSize = 10;
 
@@ -93,18 +96,33 @@ public class SheepTest extends PApplet {
 	  sheepFinder.colourSampleArea = colourSampleArea;  //radius of area to colour sample around blob centroids
 	  sheepFinder.sheepSaturationDetection = sheepSaturationDetection;
 	  
-	  image(frame,640,0,160,120);
+	  image(frame,160,0,160,120);
 	  sheepFinder.update(frame);
 	  
-	  image(sheepFinder.removeGreenBuffer, 0,0);
-
+	  image(sheepFinder.removeGreenBuffer, 0,0,160,120);
+	  
+	 
+	  
+	  //feed the camera coords into 
+	  fill(255,255,255);
+	  textFont(myFont,20);
+	  text("Image Control", 10,140);
 	  colorMode(HSB, 360,100,100);
 	  fill(greenThreshLow,100,100);
-	  rect(630,380,20,20);
+	  rect(0,280,20,20);
 	  fill(greenThreshHigh,100,100);
-	  rect(630,400,20,20);
+	  rect(0,300,20,20);
 	  colorMode(RGB, 255);
-
+	  
+	  
+	  //Draw The fieldModel
+	  
+	  //this gives us coordinates in camera space
+	  for(Blob b : sheepFinder.sheepList){
+		  ellipse(b.centroid.x, b.centroid.y, 10,10);
+	  }
+	  fieldModel.updateSheepPositions(sheepFinder.sheepList);
+	  fieldModel.draw(new Point(330,0));
 	  
 	}
 

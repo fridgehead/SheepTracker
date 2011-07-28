@@ -1,4 +1,6 @@
 import java.awt.Point;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 import hypermedia.video.Blob;
@@ -8,7 +10,7 @@ import javax.media.jai.*;
 
 public class FieldModel {
 	private SheepTest parent;
-	private ArrayList<Point> sheepList = new ArrayList<Point>();
+	private ArrayList<Point2D> sheepList = new ArrayList<Point2D>();
 	PerspectiveTransform sheepTransform;
 
 	public FieldModel(SheepTest parent){
@@ -29,28 +31,35 @@ public class FieldModel {
 		//take each entry and run it through the transformation to field-space
 		sheepList.clear();
 		for (Blob b : sheepListIn){
-			Point p = new Point(0,0);
-			sheepTransform.transform(b.centroid, p);
+			Point2D p = null;
+			
+			p = sheepTransform.transform(b.centroid, p);
+			
 			sheepList.add(p);
 		}
+		
 	}
 	
 	/*
 	 * Maps all sheep coordinates from quad space to field space
 	 */
 	public void setSheepTransform(CalibrationQuad quad){
-		sheepTransform = PerspectiveTransform.getQuadToQuad(quad.p1.x, quad.p1.y, 
-															quad.p2.x, quad.p2.y, 
-															quad.p3.x, quad.p3.y,
-															quad.p3.x, quad.p3.y, 
-															0, 0, 
-															800, 0, 
-															800, 600, 
-															0, 600);
+		sheepTransform = new PerspectiveTransform();
+		sheepTransform = PerspectiveTransform.getQuadToQuad((float)quad.p1.x, (float)quad.p1.y, 
+															(float)quad.p2.x, (float)quad.p2.y, 
+															(float)quad.p3.x, (float)quad.p3.y,
+															(float)quad.p4.x, (float)quad.p4.y, 
+															0.0f, 0.0f, 
+															800.0f, 0.0f, 
+															800.0f, 600.0f, 
+															0.0f, 600.0f);
+		
+		
+		System.out.println(sheepTransform);
 	}
 	
 	
-	public ArrayList<Point> getSheepList(){
+	public ArrayList<Point2D> getSheepList(){
 		return sheepList;
 	}
 	
@@ -62,8 +71,8 @@ public class FieldModel {
 		parent.fill(0,150,0);
 		parent.rect(0,0,800,600);
 		parent.fill(255,255,255);
-		for(Point p : sheepList){
-			parent.ellipse(p.x,p.y,10,10);
+		for(Point2D p : sheepList){
+			parent.ellipse((float)p.getX(),(float)p.getY(),10,10);
 			
 		}
 		

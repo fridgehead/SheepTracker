@@ -31,15 +31,16 @@ public class FieldModel {
 	/*
 	 * takes a list of sheep blobs, transforms them to field-space and stores them
 	 */
-	public void updateSheepPositions(ArrayList<Blob> sheepListIn){
+	public void updateSheepPositions(ArrayList<Point> sheepListIn){
 		//take each entry and run it through the transformation to field-space
 		sheepList.clear();
-		for (Blob b : sheepListIn){
+		for (Point b : sheepListIn){
 			Point2D p = null;
 			
-			p = sheepTransform.transform(b.centroid, p);
+			p = sheepTransform.transform(b, p);
 			
 			sheepList.add(p);
+			
 		}
 		
 	}

@@ -1,3 +1,4 @@
+import java.awt.Point;
 import java.util.ArrayList;
 
 import hypermedia.video.Blob;
@@ -15,7 +16,7 @@ public class SheepIdentifier {
 	public int maxBlobSize, minBlobSize;
 	private OpenCV opencv;
 	public int greenThreshLow, greenThreshHigh;
-	public ArrayList<Blob> sheepList = new ArrayList<Blob>();
+	public ArrayList<Point> sheepList = new ArrayList<Point>();
 	
 	
 	public  SheepIdentifier(SheepTest p){
@@ -84,9 +85,10 @@ public class SheepIdentifier {
 	        fill(255,0,0);
 	        text("Sheep",  blobs[i].centroid.x, blobs[i].centroid.y + 20);*/
 	    	  //add this to the sheep list
-	    	sheepList.add(blobs[i]);
+	    	sheepList.add(blobs[i].centroid );
 	    	  
 	      }
+	      
 
 	      /*fill(avgColor);
 
@@ -94,6 +96,13 @@ public class SheepIdentifier {
 	      fill(0,0,0);*/
 	    }
 	  }
+	  /* handy test for grid of sheep
+	  sheepList.clear();
+	  for (int x = 0; x < 640; x+= 64){
+    	  for (int y = 0; y < 480; y+= 48){
+    		  sheepList.add(new Point(x, y));
+    	  }
+      }*/
 	}
 	
 	public void removeGreen(PImage in) {

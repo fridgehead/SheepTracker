@@ -33,6 +33,9 @@ public class SheepTest extends PApplet {
 	int quadCounter = 0;
 	FieldModel.CalibrationQuad sheepCalibQuad;
 	Point[] sheepCalibrationPoints = new Point[4];
+	
+	//tcp server
+	TankServer tankServer;
 
 	//colour buffer for object recognition
 	PImage colorBuffer;
@@ -74,7 +77,8 @@ public class SheepTest extends PApplet {
 		maxBlobSize = 10;
 
 		myFont = loadFont("SansSerif-10.vlw");
-
+		tankServer = new TankServer(this);
+		new Thread(tankServer).start();
 		
 	}
 
@@ -111,8 +115,8 @@ public class SheepTest extends PApplet {
 		//Draw The fieldModel
 		if(mode != MODE_CONFIG_SHEEP_SPACE){
 			//this gives us coordinates in camera space
-			for(Blob b : sheepFinder.sheepList){
-				ellipse(b.centroid.x, b.centroid.y, 10,10);
+			for(Point b : sheepFinder.sheepList){
+				ellipse(b.x, b.y, 10,10);
 			}
 			fieldModel.updateSheepPositions(sheepFinder.sheepList);
 			fieldModel.draw(new Point(330,0));

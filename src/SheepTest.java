@@ -39,7 +39,7 @@ public class SheepTest extends PApplet {
 
 	//colour buffer for object recognition
 	PImage colorBuffer;
-	PFont myFont;
+	PFont myFont, niceFont;
 
 
 	//test area
@@ -77,13 +77,23 @@ public class SheepTest extends PApplet {
 		maxBlobSize = 10;
 
 		myFont = loadFont("SansSerif-10.vlw");
+		niceFont = loadFont("Arial-Black-48.vlw");
 		tankServer = new TankServer(this);
 		new Thread(tankServer).start();
 		
 	}
+	
+	public void tankUpdate(TankServer.TankUpdate update){
+		fieldModel.updateTank(update);
+	}
 
 	public void draw() {
 		background(0,0,0);
+		textFont(niceFont);
+		fill(0,61,130);
+		stroke(0,61,130);
+		line(0,730,1280,730);
+		text("SheepTracker v0.1", 10, 780);
 		opencv.read();
 		frame = opencv.image();
 		sheepFinder.minBlobSize = minBlobSize;
@@ -134,6 +144,8 @@ public class SheepTest extends PApplet {
 			popMatrix();
 			
 		}
+		
+		
 
 	}
 
@@ -176,4 +188,6 @@ public class SheepTest extends PApplet {
 		PApplet.main(new String[] {"SheepTest" });
 	}
 
+	
+	
 }

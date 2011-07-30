@@ -13,8 +13,9 @@ import processing.core.PImage;
 public class FieldModel {
 	private SheepTest parent;
 	private ArrayList<Point2D> sheepList = new ArrayList<Point2D>();
+	private ArrayList<Tank> tankList = new ArrayList<Tank>();
 	PerspectiveTransform sheepTransform;
-	PImage sheepImage;
+	PImage sheepImage, tankImage;
 
 	public FieldModel(SheepTest parent){
 		this.parent = parent;
@@ -26,7 +27,32 @@ public class FieldModel {
 		p[3] = new Point(0,480);
 		setSheepTransform(new CalibrationQuad(p));
 		sheepImage = parent.loadImage("sheep.png");
+		tankImage = parent.loadImage("tank.png");
 	}
+	
+	/*
+	 * Take a tank update, using the gpstransform translate coords back to fieldspace from gps lat/lon
+	 */
+	public void updateTank(TankServer.TankUpdate t){
+		boolean updated = false;
+		for(Tank tank : tankList){
+			if(t.tankId == tank.tankId){
+				if(t.type == TankServer.TankUpdate.COMPASS){
+					tank.heading = t.heading;
+					
+				}
+				updated = true;
+			}
+		}
+		
+		if(!updated){
+			Tank tank = new Tank(t.tankId, new Point(200 + (int)(Math.random() * 50),200));
+			tankList.add(tank);
+			System.out.println("new tank");
+		}
+		
+	}
+	
 	
 	/*
 	 * takes a list of sheep blobs, transforms them to field-space and stores them
@@ -84,6 +110,18 @@ public class FieldModel {
 			
 			//parent.ellipse((float)p.getX(),(float)p.getY(),10,10);
 			parent.image(sheepImage, (float)p.getX(), (float)p.getY());
+		}
+		
+		for(Tank t : tankList){
+			parent.pushMatrix();
+			parent.translate((float)t.fieldPosition.getX() ,(float)t.fieldPosition.getY());
+			parent.rotate(parent.radians(t.heading));
+			parent.translate(-16,-16);
+			parent.image(tankImage, 0,0 );
+			parent.popMatrix();
+			parent.textFont(parent.myFont,10);
+			parent.text(t.tankId, (float)t.fieldPosition.getX(),(float)t.fieldPosition.getY());
+			
 		}
 		
 		parent.popStyle();

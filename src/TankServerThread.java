@@ -28,6 +28,7 @@ public class TankServerThread extends Thread{
 			socket.close();
 			System.out.println("killing tank thread");
 			running = false;
+			parent.receivedString("QUIT");
 		} catch (SocketException e){
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -46,7 +47,7 @@ public class TankServerThread extends Thread{
 
 				clientSentence = inFromClient.readLine();
 				if(clientSentence != null){
-					System.out.println("Received: " + clientSentence);
+					parent.receivedString(clientSentence.trim());
 				} else {
 					end();
 					

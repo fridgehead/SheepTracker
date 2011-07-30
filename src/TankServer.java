@@ -8,9 +8,9 @@ class TankServer implements Runnable{
 	String capitalizedSentence;
 	ServerSocket serverSocket;
 	
-	ArrayList<Thread> threads = new ArrayList<Thread>();
+	ArrayList<TankServerThread> threads = new ArrayList<TankServerThread>();
 	
-	private boolean running;
+	
 	public TankServer(SheepTest parent){
 		try {
 			serverSocket = new ServerSocket(4444);
@@ -30,7 +30,7 @@ class TankServer implements Runnable{
 			Socket connectionSocket;
 			try {
 				connectionSocket = serverSocket.accept();
-				Thread t = new Thread(new TankServerThread(this,connectionSocket));
+				TankServerThread t = new TankServerThread(this,connectionSocket);
 				threads.add(t);
 				
 				t.start();
@@ -38,6 +38,7 @@ class TankServer implements Runnable{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 		}
 	}
 }

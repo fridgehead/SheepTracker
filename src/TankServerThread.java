@@ -6,16 +6,17 @@ import java.net.Socket;
 import java.net.SocketException;
 
 
-public class TankServerThread implements Runnable{
+public class TankServerThread extends Thread{
 
-	TankServer parent;
+	TankServer parent; 
 	Socket socket;
 	String clientSentence = "";
 	BufferedReader inFromClient;
-	boolean running = false;
+	public boolean running = false;
 
 
-	public  TankServerThread(TankServer parent, Socket s){
+	public TankServerThread(TankServer parent, Socket s){
+		super();
 		this.parent = parent;
 		socket = s;
 		running = true;

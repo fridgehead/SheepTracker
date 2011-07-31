@@ -28,11 +28,19 @@ public class SheepTest extends PApplet {
 	public int mode = 0;
 	public static final int MODE_IDLE = 0;
 	public static final int MODE_CONFIG_SHEEP_SPACE = 1;
-
+	public static final int MODE_CONFIG_GPS_SPACE = 2;
+	
+	private boolean useCamera = false;
+	
+	
 	//quad drawing things
 	int quadCounter = 0;
 	FieldModel.CalibrationQuad sheepCalibQuad;
-	Point[] sheepCalibrationPoints = new Point[4];
+	Point.Float[] sheepCalibrationPoints = new Point.Float[4];
+	
+	int gpsQuadCounter = 0;
+	FieldModel.CalibrationQuad gpsCalibQuad;
+	Point.Float[] gpsCalibrationPoints = new Point.Float[4];
 	
 	//tcp server
 	TankServer tankServer;
@@ -53,27 +61,32 @@ public class SheepTest extends PApplet {
 		opencv.allocate(640,480);
 
 		opencv.capture(640,480);
+		opencv.loadImage("data/sheep.jpg");
 
 		sheepFinder = new SheepIdentifier(this);
 		fieldModel = new FieldModel(this);
-		sheepCalibrationPoints[0] = new Point(0,0);
-		sheepCalibrationPoints[1] = new Point(640,0);
-		sheepCalibrationPoints[2] = new Point(640,480);
-		sheepCalibrationPoints[3] = new Point(0,480);
+		sheepCalibrationPoints[0] = new Point.Float(0,0);
+		sheepCalibrationPoints[1] = new Point.Float(640,0);
+		sheepCalibrationPoints[2] = new Point.Float(640,480);
+		sheepCalibrationPoints[3] = new Point.Float(0,480);
 
 		controlP5 = new ControlP5(this);
-		controlP5.addSlider("thresh",0,255,0,20,160,100,14).setId(4);
-		controlP5.addSlider("minBlobSize",0,255,0,20,180,100,14).setId(1);
-		controlP5.addSlider("maxBlobSize",0,1500,0,20,200,100,14).setId(2);
-		controlP5.addSlider("colourSampleArea",0,30,0,20,220,100,14).setId(5);
-		controlP5.addSlider("sheepSaturationDetection",0,255,0,20,260,100,14).setId(6);
-		controlP5.addSlider("greenThreshLow",0,255,0,20,280,100,14).setId(7);
-		controlP5.addSlider("greenThreshHigh",0,255,0,20,300,100,14).setId(8);
+		controlP5.addSlider("thresh",0,255,0,20,160,150,14).setId(4);
+		controlP5.addSlider("minBlobSize",0,255,0,20,180,150,14).setId(1);
+		controlP5.addSlider("maxBlobSize",0,1500,0,20,200,150,14).setId(2);
+		controlP5.addSlider("colourSampleArea",0,30,0,20,220,150,14).setId(5);
+		controlP5.addSlider("sheepSaturationDetection",0,255,0,20,260,150,14).setId(6);
+		controlP5.addSlider("greenThreshLow",0,255,0,20,280,150,14).setId(7);
+		controlP5.addSlider("greenThreshHigh",0,255,0,20,300,150,14).setId(8);
+		controlP5.addBang("CameraTest",20,350, 20,20);
+		
 		//config bangs
 		controlP5.addBang("ConfigSheepPerspective",20,400, 20,20);
 		controlP5.addBang("IdleMode",20,450, 20,20);
-
-
+		controlP5.addBang("GpsConfigMode",20,500, 20,20);
+		controlP5.addBang("GpsReadPosition",120,500, 20,20);
+		
+		
 		maxBlobSize = 10;
 
 		myFont = loadFont("SansSerif-10.vlw");
@@ -94,7 +107,28 @@ public class SheepTest extends PApplet {
 		stroke(0,61,130);
 		line(0,730,1280,730);
 		text("SheepTracker v0.1", 10, 780);
-		opencv.read();
+		textFont(niceFont, 10);
+		switch(mode){
+		
+		case(MODE_IDLE):
+			fill(255,0,0);
+			text("Idle", 10, 720);
+			break;
+		case(MODE_CONFIG_SHEEP_SPACE):
+			fill(255,0,0);
+		text("Configure Sheep transform", 10, 720);
+			break;
+		case(MODE_CONFIG_GPS_SPACE):
+			fill(255,0,0);
+			text("Configure GPS Coords, pos: " + gpsQuadCounter, 10, 720);
+			break;			
+		}
+		
+		if(useCamera){
+			opencv.read();
+		} else {
+			opencv.loadImage("data/sheep.jpg");
+		}
 		frame = opencv.image();
 		sheepFinder.minBlobSize = minBlobSize;
 		sheepFinder.maxBlobSize = maxBlobSize;
@@ -123,17 +157,17 @@ public class SheepTest extends PApplet {
 
 
 		//Draw The fieldModel
-		if(mode != MODE_CONFIG_SHEEP_SPACE){
+		if(mode == MODE_IDLE){
 			//this gives us coordinates in camera space
 			for(Point b : sheepFinder.sheepList){
-				ellipse(b.x, b.y, 10,10);
+				ellipse(b.x / 4, b.y / 4, 10,10);
 			}
 			fieldModel.updateSheepPositions(sheepFinder.sheepList);
 			fieldModel.draw(new Point(330,0));
-		} else {
+		} else if (mode == MODE_CONFIG_SHEEP_SPACE) {
 			pushMatrix();
 			translate(330,0);
-			image(frame,0,0,800,600);
+			image(frame,0,0,640,480);
 			stroke(255,0,0);
 			
 			line((float)sheepCalibrationPoints[0].getX(), (float)sheepCalibrationPoints[0].getY(), (float)sheepCalibrationPoints[1].getX(), (float)sheepCalibrationPoints[1].getY() );
@@ -154,12 +188,12 @@ public class SheepTest extends PApplet {
 		if(mode == MODE_CONFIG_SHEEP_SPACE){
 			if(quadCounter < 3){
 				if(mouseX > 330 && mouseX < 330 + 800 && mouseY > 0 && mouseY < 600){
-					Point p = new Point(mouseX - 330, mouseY);
+					Point.Float p = new Point.Float(mouseX - 330, mouseY);
 					sheepCalibrationPoints[quadCounter] = p;
 					quadCounter ++;
 				}
 			} else {
-				Point p = new Point(mouseX - 330, mouseY);
+				Point.Float p = new Point.Float(mouseX - 330, mouseY);
 				sheepCalibrationPoints[quadCounter] = p;
 				fieldModel.setSheepTransform(sheepCalibrationPoints);
 
@@ -180,7 +214,30 @@ public class SheepTest extends PApplet {
 		} else if(theEvent.name().equals("IdleMode") ) {
 			mode = MODE_IDLE;
 
-		}
+		} else if(theEvent.name().equals("GpsConfigMode") ) {
+			mode = MODE_CONFIG_GPS_SPACE;
+
+		} else if(theEvent.name().equals("CameraTest") ) {
+			useCamera = !useCamera;
+
+		}  else if(theEvent.name().equals("GpsReadPosition") ) {
+			//read tank 1's gps coord
+			if(fieldModel.tankList.size() > 0){
+				Tank t = fieldModel.tankList.get(0);
+				gpsCalibrationPoints[gpsQuadCounter] = t.worldPosition;
+				gpsQuadCounter++;
+				
+				if(gpsQuadCounter == 3){
+					gpsQuadCounter = 0;
+					//set a new gps quad in fieldModel
+					fieldModel.setTankTransform(gpsCalibrationPoints);
+				}
+				
+			}
+			
+			
+		} 
+		
 	}
 
 

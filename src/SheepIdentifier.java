@@ -28,6 +28,7 @@ public class SheepIdentifier {
 	}
 	
 	public void update(PImage frame){
+		sheepList.clear();
 	 // opencv.read();           // grab frame from camera
 	  //opencv.copy(colorBuffer);
 	  //remember the colour image
@@ -79,7 +80,7 @@ public class SheepIdentifier {
 	      int avgColor =  parent.color (avgRed,avgGreen,avgBlue);
 
 
-	      sheepList.clear();
+	      
 	      if(parent.saturation(avgColor) < sheepSaturationDetection) {      //this blob is a sheep as its colour saturation is low (close to white)
 	        /*textFont(myFont);
 	        fill(255,0,0);

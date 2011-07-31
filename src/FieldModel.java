@@ -13,19 +13,20 @@ import processing.core.PImage;
 public class FieldModel {
 	private SheepTest parent;
 	private ArrayList<Point2D> sheepList = new ArrayList<Point2D>();
-	private ArrayList<Tank> tankList = new ArrayList<Tank>();
-	PerspectiveTransform sheepTransform;
+	public ArrayList<Tank> tankList = new ArrayList<Tank>();
+	PerspectiveTransform sheepTransform, tankTransform;
 	PImage sheepImage, tankImage;
 
 	public FieldModel(SheepTest parent){
 		this.parent = parent;
 		sheepTransform = new PerspectiveTransform();
-		Point[] p = new Point[4];
-		p[0] = new Point(0,0);
-		p[1] = new Point(640,0);
-		p[2] = new Point(640,480);
-		p[3] = new Point(0,480);
+		Point.Float[] p = new Point.Float[4];
+		p[0] = new Point.Float(0,0);
+		p[1] = new Point.Float(640,0);
+		p[2] = new Point.Float(640,480);
+		p[3] = new Point.Float(0,480);
 		setSheepTransform(new CalibrationQuad(p));
+		setTankTransform(new CalibrationQuad(p));
 		sheepImage = parent.loadImage("sheep.png");
 		tankImage = parent.loadImage("tank.png");
 	}
@@ -40,13 +41,22 @@ public class FieldModel {
 				if(t.type == TankServer.TankUpdate.COMPASS){
 					tank.heading = t.heading;
 					
+				} else if (t.type == TankServer.TankUpdate.POSITION){
+					
+					tank.setPositionFromGPS(t.lat, t.lon);
+					System.out.println(tank);
+					
+				} else if (t.type == TankServer.TankUpdate.QUIT){
+					//remove this tank
+					tankList.remove(tank);
+					System.out.println("Removed tank: " + t.tankId);
 				}
 				updated = true;
 			}
 		}
 		
 		if(!updated){
-			Tank tank = new Tank(t.tankId, new Point(200 + (int)(Math.random() * 50),200));
+			Tank tank = new Tank(t.tankId, new Point(200 + (int)(Math.random() * 30),200));
 			tankList.add(tank);
 			System.out.println("new tank");
 		}
@@ -71,7 +81,7 @@ public class FieldModel {
 		
 	}
 	
-	public void setSheepTransform(Point[] p){
+	public void setSheepTransform(Point.Float[] p){
 		setSheepTransform(new CalibrationQuad(p));
 	}
 	
@@ -80,7 +90,29 @@ public class FieldModel {
 	 */
 	public void setSheepTransform(CalibrationQuad quad){
 		sheepTransform = new PerspectiveTransform();
-		sheepTransform = PerspectiveTransform.getQuadToQuad((float)quad.p1.x, (float)quad.p1.y, 
+		sheepTransform = PerspectiveTransform.getQuadToQuad(quad.p1.x, quad.p1.y, 
+															quad.p2.x, quad.p2.y, 
+															quad.p3.x, quad.p3.y,
+															quad.p4.x, quad.p4.y, 
+															0.0f, 0.0f, 
+															800.0f, 0.0f, 
+															800.0f, 600.0f, 
+															0.0f, 600.0f);
+		
+		
+		System.out.println("SheepTransform: " + sheepTransform);
+	}
+	
+	public void setTankTransform(Point.Float[] p){
+		setSheepTransform(new CalibrationQuad(p));
+	}
+	
+	/*
+	 * Maps all sheep coordinates from camera space to field space
+	 */
+	public void setTankTransform(CalibrationQuad quad){
+		tankTransform = new PerspectiveTransform();
+		tankTransform = PerspectiveTransform.getQuadToQuad((float)quad.p1.x, (float)quad.p1.y, 
 															(float)quad.p2.x, (float)quad.p2.y, 
 															(float)quad.p3.x, (float)quad.p3.y,
 															(float)quad.p4.x, (float)quad.p4.y, 
@@ -90,7 +122,7 @@ public class FieldModel {
 															0.0f, 600.0f);
 		
 		
-		System.out.println(sheepTransform);
+		System.out.println("Tank Transform: " + tankTransform);
 	}
 	
 	
@@ -109,7 +141,7 @@ public class FieldModel {
 		for(Point2D p : sheepList){
 			
 			//parent.ellipse((float)p.getX(),(float)p.getY(),10,10);
-			parent.image(sheepImage, (float)p.getX(), (float)p.getY());
+			parent.image(sheepImage, (float)p.getX() - 20, (float)p.getY() - 16);
 		}
 		
 		for(Tank t : tankList){
@@ -131,8 +163,8 @@ public class FieldModel {
 	}
 	
 	public class CalibrationQuad{
-		Point p1,p2,p3,p4;
-		public CalibrationQuad(Point[] p){
+		Point.Float p1,p2,p3,p4;
+		public CalibrationQuad(Point.Float[] p){
 			p1 = p[0];
 			p2 = p[1];
 			p3 = p[2];

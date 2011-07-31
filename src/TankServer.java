@@ -44,6 +44,19 @@ class TankServer implements Runnable{
 					catch (Exception e) {
 						e.printStackTrace();
 					}
+				} else if (elements[1].equals("G")){
+					try{
+						t.type = TankUpdate.POSITION;
+						t.tankId = Integer.parseInt(elements[0]);
+						t.lon = Float.parseFloat(elements[2]);
+						t.lat = Float.parseFloat(elements[3]);
+						t.accuracy = (int)Float.parseFloat(elements[4]);
+						
+						parent.tankUpdate(t);
+					}catch (Exception e){
+						e.printStackTrace();
+						
+					}
 				}
 			}
 		}

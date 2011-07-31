@@ -49,7 +49,9 @@ class TankServer implements Runnable{
 						t.type = TankUpdate.POSITION;
 						t.tankId = Integer.parseInt(elements[0]);
 						t.lon = Float.parseFloat(elements[2]);
+						
 						t.lat = Float.parseFloat(elements[3]);
+						
 						t.accuracy = (int)Float.parseFloat(elements[4]);
 						
 						parent.tankUpdate(t);
@@ -85,8 +87,8 @@ class TankServer implements Runnable{
 
 	public class TankUpdate{
 		public int heading;
-		public float lon;
-		public float lat;
+		public double lon;
+		public double lat;
 		public int accuracy;
 		public int type;
 		public int tankId;

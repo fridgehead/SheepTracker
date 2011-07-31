@@ -42,6 +42,8 @@ public class SheepTest extends PApplet {
 	FieldModel.CalibrationQuad gpsCalibQuad;
 	Point.Float[] gpsCalibrationPoints = new Point.Float[4];
 	
+	int compassCorrection = 0;
+	
 	//tcp server
 	TankServer tankServer;
 
@@ -78,6 +80,7 @@ public class SheepTest extends PApplet {
 		controlP5.addSlider("sheepSaturationDetection",0,255,0,20,260,150,14).setId(6);
 		controlP5.addSlider("greenThreshLow",0,255,0,20,280,150,14).setId(7);
 		controlP5.addSlider("greenThreshHigh",0,255,0,20,300,150,14).setId(8);
+		controlP5.addSlider("compassCorrection",0,360,0,20,320,150,14).setId(9);
 		controlP5.addBang("CameraTest",20,350, 20,20);
 		
 		//config bangs
@@ -123,6 +126,10 @@ public class SheepTest extends PApplet {
 			text("Configure GPS Coords, pos: " + gpsQuadCounter, 10, 720);
 			break;			
 		}
+		
+		text("" + gpsCalibQuad, 10, 680);
+		
+		fieldModel.setCompassCorrection(compassCorrection);
 		
 		if(useCamera){
 			opencv.read();
@@ -225,9 +232,10 @@ public class SheepTest extends PApplet {
 			if(fieldModel.tankList.size() > 0){
 				Tank t = fieldModel.tankList.get(0);
 				gpsCalibrationPoints[gpsQuadCounter] = t.worldPosition;
+				System.out.println("calibpt: " + t.worldPosition);
 				gpsQuadCounter++;
 				
-				if(gpsQuadCounter == 3){
+				if(gpsQuadCounter == 4){
 					gpsQuadCounter = 0;
 					//set a new gps quad in fieldModel
 					fieldModel.setTankTransform(gpsCalibrationPoints);

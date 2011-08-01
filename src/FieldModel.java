@@ -28,6 +28,12 @@ public class FieldModel {
 	
 	public TankController tankController;
 	private String serialPort = "";
+	
+	public int width = 800;
+	public int height = 600;
+	
+	public Point sheepCenter = new Point(400,300);
+	public Point penLocation = new Point(400,10);
 
 
 	public FieldModel(SheepTest parent){
@@ -118,7 +124,7 @@ public class FieldModel {
 		}
 
 		if(!updated){
-			Tank tank = new Tank(t.tankId, new Point(200 + (int)(Math.random() * 30),200));
+			Tank tank = new Tank(t.tankId, new Point(200 + (int)(Math.random() * 30),200), this);
 			tankList.add(tank);
 			parent.log("new tank");
 		}
@@ -205,6 +211,15 @@ public class FieldModel {
 	}
 
 	public void draw(Point basePos){
+		//update the tanks
+		if(parent.mode == SheepTest.MODE_RUNNING){
+			for(Tank t : tankList){
+				t.run(tankList, sheepList);
+				
+			}
+		}
+		
+		
 		this.basePos = basePos;
 		parent.pushMatrix();
 		parent.translate(basePos.x, basePos.y);
@@ -241,6 +256,10 @@ public class FieldModel {
 		parent.fill(0,255,0);
 		parent.ellipse(flockCenter.x, flockCenter.y, 10,10);
 
+		parent.fill(0,0,255);
+		parent.rect(penLocation.x - 5, penLocation.y - 5, 10, 10);
+		
+		
 		parent.popStyle();
 		parent.popMatrix();
 

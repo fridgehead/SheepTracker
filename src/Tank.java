@@ -71,46 +71,33 @@ public class Tank {
 		 desiredAngle = (float) (route.heading2D() - Math.PI / 2);
 		
 
-		float diff = (float) (desiredAngle - Math.toRadians(heading) ) ;
+		float diff = (float) (desiredAngle - Math.toRadians(heading - 90) ) ;
 		System.out.println("diff1: " + diff);
 
-		/*if(diff > Math.PI) {
+		
 
-			diff = (float) (diff - Math.PI*2);
-
-		}
-
-		if(diff < Math.PI) {
-
-			diff = (float) (diff + Math.PI*2); 
-
-		}*/
-		//System.out.println("diff2: " + diff);
-
-		if(diff < -Math.PI/10) { 
+		if(diff > Math.PI/10 && diff < Math.PI) { 
 
 			//send a command to turn left
 			//cancel this command when the angle is near enough
-			if(command != TankController.TankCommand.ROTATE_LEFT){
-				parent.tankController.rotate(tankId, -1);
-				command = TankController.TankCommand.ROTATE_LEFT;
-			}
-		}
-
-		if(diff > Math.PI/10) {
-
-
-			// INSERT SERIAL 'MOVE RIGHT CODE HERE'
-			// or in simulation, uncomment the following
 			if(command != TankController.TankCommand.ROTATE_RIGHT){
 				parent.tankController.rotate(tankId, 1);
 				command = TankController.TankCommand.ROTATE_RIGHT;
 			}
+		} 
+		if(diff < (2*Math.PI) -Math.PI/10 && diff > Math.PI) {
 
 
-		}
+			// INSERT SERIAL 'MOVE RIGHT CODE HERE'
+			// or in simulation, uncomment the following
+			if(command != TankController.TankCommand.ROTATE_LEFT){
+				parent.tankController.rotate(tankId, -1);
+				command = TankController.TankCommand.ROTATE_LEFT;
+			}
 
-		if(diff >  -Math.PI/10 && diff <  Math.PI/10) {
+
+		} 
+		if((diff > (2*Math.PI) -Math.PI/10 && diff < 2*Math.PI) || (diff < Math.PI/10 ) && diff > 0) {
 
 			// move forward;
 

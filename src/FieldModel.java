@@ -27,6 +27,7 @@ public class FieldModel {
 	Point basePos;
 	
 	public TankController tankController;
+	private String serialPort = "";
 
 
 	public FieldModel(SheepTest parent){
@@ -44,7 +45,7 @@ public class FieldModel {
 		yaml = new Yaml();
 		loadSettings();
 		
-		tankController = new TankController(parent);
+		tankController = new TankController(parent, "/dev/FUCKSOCKS");
 		tankController.start();
 		
 	}
@@ -53,9 +54,12 @@ public class FieldModel {
 		try{
 			Point.Float[] gpsPoints = new Point.Float[4];
 			InputStream input = new FileInputStream("settings.yaml");
+			
 
 			for(Object obj : yaml.loadAll(input)){				
 				Map<String, Object> objMap = (Map<String, Object>)obj;
+				serialPort = (String)objMap.get("serialPort");
+				parent.log("Serial port is : " + serialPort);
 				
 				ArrayList quadList = (ArrayList)objMap.get("gpsQuad");
 
@@ -65,7 +69,7 @@ public class FieldModel {
 					float xp = ((Double)qPoint.get("x")).floatValue();
 					float yp = ((Double)qPoint.get("y")).floatValue();
 					gpsPoints[id] = new Point.Float(xp,yp);
-					System.out.println("loaded gps coord: " + id + " - " + gpsPoints[id]);
+					parent.log("loaded gps coord: " + id + " - " + gpsPoints[id]);
 					
 					
 				}
@@ -102,12 +106,12 @@ public class FieldModel {
 
 					tank.fieldPosition = new Point((int)p.getX(), (int)p.getY());
 					//tank.fieldPosition = new Point(200,200);
-					//System.out.println(tank);
+					//parent.log(tank);
 
 				} else if (t.type == TankServer.TankUpdate.QUIT){
 					//remove this tank
 					tankList.remove(tank);
-					System.out.println("Removed tank: " + t.tankId);
+					parent.log("Removed tank: " + t.tankId);
 				}
 				updated = true;
 			}
@@ -116,7 +120,7 @@ public class FieldModel {
 		if(!updated){
 			Tank tank = new Tank(t.tankId, new Point(200 + (int)(Math.random() * 30),200));
 			tankList.add(tank);
-			System.out.println("new tank");
+			parent.log("new tank");
 		}
 
 	}

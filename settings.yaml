@@ -16,3 +16,4 @@ gpsQuad:
      y: 5724095.5
    
 
+serialPort: /dev/MONKEY

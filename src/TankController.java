@@ -14,7 +14,7 @@ public class TankController extends Thread {
 	// list of
 	Vector<TankCommand> tankCommandList = new Vector<TankCommand>(5);
 
-	public TankController (SheepTest parent){
+	public TankController (SheepTest parent, String serialPort){
 		this.parent = parent;
 		String[] list = Serial.list();
 		for(String l : list){
@@ -22,13 +22,13 @@ public class TankController extends Thread {
 		}
 		int serIndex = -1;
 		for(int i = 0; i < list.length; i++){
-			if(list.equals("/dev/tty.master")){
+			if(list.equals(serialPort)){
 				serIndex = i;
 			}
 		}
 
 		if(serIndex == -1){
-			System.out.println("!!!!!! -- NO SERIAL PORT FOUND!!!!!!!");
+			parent.log("!!!!!! -- NO SERIAL PORT FOUND!!!!!!!");
 
 		} else {
 			serial = new Serial(parent, Serial.list()[serIndex], 9600);
@@ -45,7 +45,7 @@ public class TankController extends Thread {
 
 	private void sendString(int tankId, String in){
 		// serial.write(in);
-		System.out.println("SERIAL COMMAND: $" + tankId + in);
+		parent.log("SERIAL COMMAND: $" + tankId + in);
 	}
 
 	public void addTank(int index){
@@ -98,6 +98,7 @@ public class TankController extends Thread {
 		tankCommandList.get(tankId).processed = false;
 
 	}
+	
 	
 	public void stopMoving(int tankId){
 		tankCommandList.set(tankId, TankCommand.STOP_MOVING);

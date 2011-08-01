@@ -17,7 +17,7 @@ public class SheepIdentifier {
 	private OpenCV opencv;
 	public int greenThreshLow, greenThreshHigh;
 	public ArrayList<Point> sheepList = new ArrayList<Point>();
-	
+	public int cameraBlur = 6;
 	
 	public  SheepIdentifier(SheepTest p){
 		this.parent = p;
@@ -43,7 +43,7 @@ public class SheepIdentifier {
 	  //opencv.blur(OpenCV.BLUR, 6);                //  Blur to remove camera noise
 
 	  //opencv.threshold(thresh);
-	  opencv.blur(OpenCV.BLUR, 6);
+	  opencv.blur(OpenCV.BLUR, cameraBlur);
 	  removeGreen(opencv.image());
 	  //image(removeGreenBuffer, 0,0);
 	  opencv.copy(removeGreenBuffer);

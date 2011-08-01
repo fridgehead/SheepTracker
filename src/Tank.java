@@ -11,6 +11,9 @@ public class Tank {
 	
 	public Point fieldPosition;
 	public Point.Float worldPosition;//in x/y not lat/lon
+	public Point targetPosition;
+	
+	public boolean selected = false;
 	
 	
 	public Tank(int tankId, Point pos){

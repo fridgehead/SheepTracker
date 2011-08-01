@@ -24,6 +24,9 @@ public class FieldModel {
 	private int compassCorrection = 0;
 	public Point flockCenter = new Point(0,0);
 	private Yaml yaml;
+	Point basePos;
+	
+	public TankController tankController;
 
 
 	public FieldModel(SheepTest parent){
@@ -40,6 +43,10 @@ public class FieldModel {
 		tankImage = parent.loadImage("tank.png");
 		yaml = new Yaml();
 		loadSettings();
+		
+		tankController = new TankController(parent);
+		tankController.start();
+		
 	}
 
 	public void loadSettings(){
@@ -94,6 +101,7 @@ public class FieldModel {
 					p = tankTransform.transform((Point2D)tank.worldPosition, p);
 
 					tank.fieldPosition = new Point((int)p.getX(), (int)p.getY());
+					//tank.fieldPosition = new Point(200,200);
 					//System.out.println(tank);
 
 				} else if (t.type == TankServer.TankUpdate.QUIT){
@@ -193,6 +201,7 @@ public class FieldModel {
 	}
 
 	public void draw(Point basePos){
+		this.basePos = basePos;
 		parent.pushMatrix();
 		parent.translate(basePos.x, basePos.y);
 		parent.pushStyle();
@@ -211,7 +220,14 @@ public class FieldModel {
 			parent.translate((float)t.fieldPosition.getX() ,(float)t.fieldPosition.getY());
 			parent.rotate(parent.radians(t.heading));
 			parent.translate(-16,-16);
+			
 			parent.image(tankImage, 0,0 );
+			if(t.selected){
+				parent.stroke(255,0,0);
+				parent.noFill();
+				parent.rect(0, 0, 32, 32);
+				
+			}
 			parent.popMatrix();
 			parent.textFont(parent.myFont,10);
 			parent.text(t.tankId, (float)t.fieldPosition.getX(),(float)t.fieldPosition.getY());
@@ -239,6 +255,43 @@ public class FieldModel {
 
 		public String toString(){
 			return "p1: " + p1 + " p2: " + p2 + "\np3: " + p3 + " p4: " + p4;
+		}
+	}
+
+	public void mouseClicked(int mouseX, int mouseY) {
+		for(Tank tank : tankList){
+			tank.selected = false;
+			if(mouseX - basePos.x > tank.fieldPosition.x -16  && mouseX - basePos.x < tank.fieldPosition.x + 16){
+				if(mouseY - basePos.y > tank.fieldPosition.y -16 && mouseY - basePos.y < tank.fieldPosition.y + 16){
+					tank.selected = true;
+				}
+			}
+		}
+	}
+
+	public void keyPressed(int keyCode) {
+		for(Tank t : tankList){
+			if(t.selected){
+				switch (keyCode){
+					case 38:	//up
+						tankController.go(t.tankId, 1);
+						break;
+					
+					case 39:	//right
+						tankController.rotate(t.tankId, 1);
+						break;
+					case 40:	//down
+						tankController.go(t.tankId, -1);
+						break;
+					case 37:	//left
+						tankController.rotate(t.tankId, -1);
+						break;
+					case 32:		//space
+						tankController.stopMoving(t.tankId);
+						tankController.stopRotate(t.tankId);
+						break;
+				}
+			}
 		}
 	}
 

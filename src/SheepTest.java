@@ -24,13 +24,16 @@ public class SheepTest extends PApplet {
 	int greenThreshHigh = 80;
 	int colourSampleArea = 5;  //radius of area to colour sample around blob centroids
 	int sheepSaturationDetection = 0;  //saturation threshhold at which we think this is a sheep
-
+	int cameraBlur = 6;
+	
 	public int mode = 0;
 	public static final int MODE_IDLE = 0;
 	public static final int MODE_CONFIG_SHEEP_SPACE = 1;
 	public static final int MODE_CONFIG_GPS_SPACE = 2;
 	
 	private boolean useCamera = false;
+	
+	PImage bgImage;
 	
 	
 	//quad drawing things
@@ -63,7 +66,7 @@ public class SheepTest extends PApplet {
 		opencv.allocate(640,480);
 
 		opencv.capture(640,480);
-		opencv.loadImage("data/sheep.jpg");
+		bgImage = loadImage("data/sheep.jpg");
 
 		sheepFinder = new SheepIdentifier(this);
 		fieldModel = new FieldModel(this);
@@ -73,14 +76,15 @@ public class SheepTest extends PApplet {
 		sheepCalibrationPoints[3] = new Point.Float(0,480);
 
 		controlP5 = new ControlP5(this);
-		controlP5.addSlider("thresh",0,255,0,20,160,150,14).setId(4);
-		controlP5.addSlider("minBlobSize",0,255,0,20,180,150,14).setId(1);
-		controlP5.addSlider("maxBlobSize",0,1500,0,20,200,150,14).setId(2);
-		controlP5.addSlider("colourSampleArea",0,30,0,20,220,150,14).setId(5);
-		controlP5.addSlider("sheepSaturationDetection",0,255,0,20,260,150,14).setId(6);
-		controlP5.addSlider("greenThreshLow",0,255,0,20,280,150,14).setId(7);
-		controlP5.addSlider("greenThreshHigh",0,255,0,20,300,150,14).setId(8);
-		controlP5.addSlider("compassCorrection",0,360,0,20,320,150,14).setId(9);
+		controlP5.addSlider("thresh",0,255,0,			20,160,150,14).setId(4);
+		controlP5.addSlider("minBlobSize",0,255,0,		20,180,150,14).setId(1);
+		controlP5.addSlider("maxBlobSize",0,1500,0,		20,200,150,14).setId(2);
+		controlP5.addSlider("colourSampleArea",0,30,0,	20,220,150,14).setId(5);
+		controlP5.addSlider("sheepSaturationDetection",0,255,0,	20,260,150,14).setId(6);
+		controlP5.addSlider("greenThreshLow",0,255,0,	20,280,150,14).setId(7);
+		controlP5.addSlider("greenThreshHigh",0,255,0,	20,300,150,14).setId(8);
+		controlP5.addSlider("cameraBlur",0,255,0,		20,320,150,14).setId(10);
+		controlP5.addSlider("compassCorrection",0,360,0,20,340,150,14).setId(9);
 		controlP5.addBang("CameraTest",20,350, 20,20);
 		
 		//config bangs
@@ -103,6 +107,8 @@ public class SheepTest extends PApplet {
 		fieldModel.updateTank(update);
 	}
 
+	
+	
 	public void draw() {
 		background(0,0,0);
 		textFont(niceFont);
@@ -134,7 +140,7 @@ public class SheepTest extends PApplet {
 		if(useCamera){
 			opencv.read();
 		} else {
-			opencv.loadImage("data/sheep.jpg");
+			opencv.copy(bgImage);
 		}
 		frame = opencv.image();
 		sheepFinder.minBlobSize = minBlobSize;
@@ -145,6 +151,7 @@ public class SheepTest extends PApplet {
 		sheepFinder.sheepSaturationDetection = sheepSaturationDetection;
 
 		image(frame,160,0,160,120);
+		sheepFinder.cameraBlur = cameraBlur;
 		sheepFinder.update(frame);
 
 		image(sheepFinder.removeGreenBuffer, 0,0,160,120);
@@ -207,10 +214,16 @@ public class SheepTest extends PApplet {
 				quadCounter = 0;			
 
 			}
+		} else if (mode == MODE_IDLE){
+			fieldModel.mouseClicked(mouseX, mouseY);
+			
 		}
 	}
 
 	public void keyPressed() {
+
+		//fieldModel.tankController.rotate((int)(Math.random() * 3), -3 + (int)(Math.random() + 4));
+		fieldModel.keyPressed(keyCode);
 	}
 
 	public void controlEvent(ControlEvent theEvent) {

@@ -18,6 +18,7 @@ public class Tank {
 	public Point targetPosition;
 
 	public boolean selected = false;
+	public float desiredAngle = 0.0f;
 
 	FieldModel parent;
 	PVector loc;
@@ -67,11 +68,13 @@ public class Tank {
 		route.sub(loc);
 
 
-		float desiredAngle = route.heading2D();
+		 desiredAngle = (float) (route.heading2D() - Math.PI / 2);
+		
 
-		float diff = (float) (desiredAngle - Math.toRadians(heading));
+		float diff = (float) (desiredAngle - Math.toRadians(heading) ) ;
+		System.out.println("diff1: " + diff);
 
-		if(diff > Math.PI) {
+		/*if(diff > Math.PI) {
 
 			diff = (float) (diff - Math.PI*2);
 
@@ -81,14 +84,15 @@ public class Tank {
 
 			diff = (float) (diff + Math.PI*2); 
 
-		}
+		}*/
+		//System.out.println("diff2: " + diff);
 
 		if(diff < -Math.PI/10) { 
 
 			//send a command to turn left
 			//cancel this command when the angle is near enough
 			if(command != TankController.TankCommand.ROTATE_LEFT){
-				parent.tankController.rotate(tankId, 1);
+				parent.tankController.rotate(tankId, -1);
 				command = TankController.TankCommand.ROTATE_LEFT;
 			}
 		}
@@ -106,7 +110,7 @@ public class Tank {
 
 		}
 
-		if(diff < Math.PI/2) {
+		if(diff >  -Math.PI/10 && diff <  Math.PI/10) {
 
 			// move forward;
 

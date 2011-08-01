@@ -89,7 +89,8 @@ public class SheepTest extends PApplet {
 		opencv = new OpenCV( this );
 		opencv.allocate(640,480);
 
-		opencv.capture(640,480);
+		//opencv.capture(640,480);
+		opencv.movie("data/test.mov");
 		bgImage = loadImage("data/sheep.jpg");
 
 		sheepFinder = new SheepIdentifier(this);
@@ -148,7 +149,8 @@ public class SheepTest extends PApplet {
 		if(useCamera){
 			opencv.read();
 		} else {
-			opencv.copy(bgImage);
+			//opencv.copy(bgImage);
+			opencv.loadImage("data/sheep.jpg");
 		}
 		frame = opencv.image();
 		sheepFinder.minBlobSize = minBlobSize;

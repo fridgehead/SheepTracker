@@ -235,18 +235,29 @@ public class FieldModel {
 		}
 
 		for(Tank t : tankList){
+			parent.noFill();
+			parent.stroke(255,0,0);
+			parent.rect(t.currentTarget.x, t.currentTarget.y,5,5);
+			
 			parent.pushMatrix();
 			parent.translate((float)t.fieldPosition.getX() ,(float)t.fieldPosition.getY());
 			parent.rotate(parent.radians(t.heading));
 			parent.translate(-16,-16);
 			
 			parent.image(tankImage, 0,0 );
+			
 			if(t.selected){
 				parent.stroke(255,0,0);
 				parent.noFill();
 				parent.rect(0, 0, 32, 32);
 				
 			}
+						
+			parent.popMatrix();
+			parent.pushMatrix();
+			parent.translate((float)t.fieldPosition.getX() ,(float)t.fieldPosition.getY());
+			parent.rotate(t.desiredAngle);
+			parent.line(0,0,0,20);
 			parent.popMatrix();
 			parent.textFont(parent.myFont,10);
 			parent.text(t.tankId, (float)t.fieldPosition.getX(),(float)t.fieldPosition.getY());

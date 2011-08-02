@@ -11,7 +11,7 @@ public class SheepIdentifier {
 
 	SheepTest parent;
 	public int sheepSaturationDetection;
-	public PImage colorBuffer, removeGreenBuffer;;
+	public PImage colorBuffer, removeGreenBuffer, bgBuffer;;
 	public int colourSampleArea;
 	public int maxBlobSize, minBlobSize;
 	private OpenCV opencv;
@@ -24,6 +24,7 @@ public class SheepIdentifier {
 		opencv = p.opencv;
 		removeGreenBuffer = parent.createImage(640,480, parent.RGB);
 		colorBuffer = parent.createImage(640,480, parent.RGB);
+		bgBuffer = parent.createImage(640,480, parent.RGB);
 
 	}
 
@@ -39,14 +40,17 @@ public class SheepIdentifier {
 
 
 			//opencv.invert();
-			opencv.threshold(150, 0, OpenCV.THRESH_OTSU | OpenCV.THRESH_TOZERO);    // set black & white threshold 
+			//opencv.threshold(parent.thresh, 0, OpenCV.THRESH_OTSU | OpenCV.THRESH_TOZERO);    // set black & white threshold 
 			opencv.absDiff();                           //  Creates a difference image
 			opencv.convert(OpenCV.GRAY);                //  Converts to greyscale
 			opencv.blur(OpenCV.BLUR, cameraBlur);
+			opencv.threshold(parent.thresh);
+
+			bgBuffer = opencv.image();
 
 		} else {
 
-		//opencv.threshold(thresh);
+		    
 			opencv.blur(OpenCV.BLUR, cameraBlur);
 			removeGreen(opencv.image());
 			//image(removeGreenBuffer, 0,0);
@@ -111,6 +115,7 @@ public class SheepIdentifier {
 	}
 	
 	public void remember(){
+		parent.log("remembered frame");
 		opencv.remember();
 	}
 

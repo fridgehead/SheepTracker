@@ -18,7 +18,7 @@ public class SheepTest extends PApplet {
 	SheepIdentifier sheepFinder;
 	public FieldModel fieldModel;
 	//tracker params
-	int thresh = 0;   //threshold value 
+	public int thresh = 0;   //threshold value 
 	int minBlobSize = 10;
 	int maxBlobSize = 0;
 	int greenThreshLow = 65;
@@ -70,8 +70,8 @@ public class SheepTest extends PApplet {
 		logTextArea = controlP5.addTextarea("Log", "Started logging..\n", 330,620,800,100);
 		
 		controlP5.addSlider("thresh",0,255,0,			20,160,150,14).setId(4);
-		controlP5.addSlider("minBlobSize",0,255,0,		20,180,150,14).setId(1);
-		controlP5.addSlider("maxBlobSize",0,3500,0,		20,200,150,14).setId(2);
+		controlP5.addSlider("minBlobSize",0,4000,0,		20,180,150,14).setId(1);
+		controlP5.addSlider("maxBlobSize",0,5500,0,		20,200,150,14).setId(2);
 		controlP5.addSlider("colourSampleArea",0,30,0,	20,220,150,14).setId(5);
 		controlP5.addSlider("sheepSaturationDetection",0,255,0,	20,260,150,14).setId(6);
 		controlP5.addSlider("greenThreshLow",0,255,0,	20,280,150,14).setId(7);
@@ -167,9 +167,12 @@ public class SheepTest extends PApplet {
 		image(frame,160,0,160,120);
 		sheepFinder.cameraBlur = cameraBlur;
 		sheepFinder.update(frame);
+		if(backgroundSubtractMode){
+			image(sheepFinder.bgBuffer, 0,0,160,120);
 
-		image(sheepFinder.removeGreenBuffer, 0,0,160,120);
-
+		} else {
+			image(sheepFinder.removeGreenBuffer, 0,0,160,120);
+		}
 
 
 		//feed the camera coords into 
@@ -290,6 +293,7 @@ public class SheepTest extends PApplet {
 			mode = MODE_RUNNING;
 		} else if(theEvent.name().equals("BGSubtractMode") ) {
 			backgroundSubtractMode = ! backgroundSubtractMode;
+			log("background subtract mode : " + backgroundSubtractMode);
 		} else if(theEvent.name().equals("remember") ) {
 			sheepFinder.remember();
 		}

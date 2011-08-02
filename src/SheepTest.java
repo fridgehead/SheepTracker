@@ -35,6 +35,7 @@ public class SheepTest extends PApplet {
 
 	private boolean useCamera = false;
 
+	public boolean backgroundSubtractMode = false;
 	PImage bgImage;
 
 
@@ -70,7 +71,7 @@ public class SheepTest extends PApplet {
 		
 		controlP5.addSlider("thresh",0,255,0,			20,160,150,14).setId(4);
 		controlP5.addSlider("minBlobSize",0,255,0,		20,180,150,14).setId(1);
-		controlP5.addSlider("maxBlobSize",0,1500,0,		20,200,150,14).setId(2);
+		controlP5.addSlider("maxBlobSize",0,3500,0,		20,200,150,14).setId(2);
 		controlP5.addSlider("colourSampleArea",0,30,0,	20,220,150,14).setId(5);
 		controlP5.addSlider("sheepSaturationDetection",0,255,0,	20,260,150,14).setId(6);
 		controlP5.addSlider("greenThreshLow",0,255,0,	20,280,150,14).setId(7);
@@ -85,12 +86,15 @@ public class SheepTest extends PApplet {
 		controlP5.addBang("GpsConfigMode",20,500, 20,20);
 		controlP5.addBang("GpsReadPosition",120,500, 20,20);
 		controlP5.addBang("RunMode",20,550, 20,20);
+		controlP5.addBang("BGSubtractMode",20,590, 20,20);
+		controlP5.addBang("remember",120,590, 20,20);
+
 
 		opencv = new OpenCV( this );
 		opencv.allocate(640,480);
 
-		//opencv.capture(640,480);
-		opencv.movie("data/test.mov");
+		opencv.capture(640,480);
+		//opencv.movie("data/test.mov");
 		bgImage = loadImage("data/sheep.jpg");
 
 		sheepFinder = new SheepIdentifier(this);
@@ -284,6 +288,10 @@ public class SheepTest extends PApplet {
 
 		}  else if(theEvent.name().equals("RunMode") ) {
 			mode = MODE_RUNNING;
+		} else if(theEvent.name().equals("BGSubtractMode") ) {
+			backgroundSubtractMode = ! backgroundSubtractMode;
+		} else if(theEvent.name().equals("remember") ) {
+			sheepFinder.remember();
 		}
 
 

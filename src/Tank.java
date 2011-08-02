@@ -104,6 +104,7 @@ public class Tank {
 			// INSERT SERIAL 'MOVE FORWARD CODE HERE'
 			// or in simulation, uncomment the following
 			if(command != TankController.TankCommand.FORWARD){
+				parent.tankController.stopRotate(tankId);
 				parent.tankController.go(tankId, 1);
 
 				command = TankController.TankCommand.FORWARD;

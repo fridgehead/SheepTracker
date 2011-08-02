@@ -84,7 +84,6 @@ class TankServer implements Runnable{
 		}
 	}
 
-
 	public class TankUpdate{
 		public int heading;
 		public double lon;
@@ -104,5 +103,6 @@ class TankServer implements Runnable{
 		}
 
 	}
+
 
 }

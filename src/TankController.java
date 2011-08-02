@@ -27,13 +27,13 @@ public class TankController extends Thread {
 			}
 		}
 
-		if(serIndex == -1){
-			parent.log("!!!!!! -- NO SERIAL PORT FOUND!!!!!!!");
+		//if(serIndex == -1){
+			//parent.log("!!!!!! -- NO SERIAL PORT FOUND!!!!!!!");
 
-		} else {
-			serial = new Serial(parent, Serial.list()[serIndex], 9600);
-			serial.write("HELLO");
-		}
+		//} else {
+			serial = new Serial(parent, Serial.list()[0], 115200);
+			//serial.write("HELLO");
+		//}
 
 		for(int i = 0; i < 3; i++){
 			tankCommandList.add( TankCommand.IDLE);
@@ -44,7 +44,7 @@ public class TankController extends Thread {
 	}
 
 	private void sendString(int tankId, String in){
-		// serial.write(in);
+		 serial.write("$" + tankId + in);
 		parent.log("SERIAL COMMAND: $" + tankId + in);
 	}
 
@@ -105,6 +105,12 @@ public class TankController extends Thread {
 		tankCommandList.get(tankId).processed = false;
 
 	}
+	
+	public void stopEverything(int tankId){
+		tankCommandList.set(tankId, TankCommand.STOPALL);
+		tankCommandList.get(tankId).processed = false;
+
+	}
 
 	public void go(int tankId, int direction){
 		if(direction < 0){
@@ -131,8 +137,13 @@ public class TankController extends Thread {
 
 				if(tc.processed == false){
 					if(tc != TankCommand.IDLE){
-						sendString(ind, tc.sendString);
-						tc.processed = true;
+						if(tc == TankCommand.STOPALL){
+							sendString(ind, "D");
+							sendString(ind, "T");
+						} else {
+							sendString(ind, tc.sendString);
+							tc.processed = true;
+						}
 					}
 
 				}
@@ -143,7 +154,7 @@ public class TankController extends Thread {
 	}
 
 	public enum TankCommand{
-		FORWARD("F"), BACKWARD("B"), ROTATE_LEFT("L"), ROTATE_RIGHT("R"), STOP_MOVING("D"), STOP_ROTATING("T"), IDLE("");
+		FORWARD("F"), STOPALL(""), BACKWARD("B"), ROTATE_LEFT("L"), ROTATE_RIGHT("R"), STOP_MOVING("D"), STOP_ROTATING("T"), IDLE("");
 
 		public boolean processed = false;
 		public String sendString = "";

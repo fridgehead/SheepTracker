@@ -90,10 +90,7 @@ public class SheepIdentifier {
 
 
 				if(parent.saturation(avgColor) < sheepSaturationDetection) {      //this blob is a sheep as its colour saturation is low (close to white)
-					/*textFont(myFont);
-	        fill(255,0,0);
-	        text("Sheep",  blobs[i].centroid.x, blobs[i].centroid.y + 20);*/
-					//add this to the sheep list
+					
 					sheepList.add(blobs[i].centroid );
 
 				}
@@ -136,5 +133,15 @@ public class SheepIdentifier {
 		removeGreenBuffer.updatePixels();
 
 		// return removeGreenBuffer;
+	}
+
+	public void setSettings(IdentifierSettings i) {
+		minBlobSize = i.minBlobSize;
+		maxBlobSize = i.maxBlobSize;
+		greenThreshLow = i.lowerHue;
+		greenThreshHigh = i.higherHue;
+		colourSampleArea = i.colourSampleArea;  //radius of area to colour sample around blob centroids
+		sheepSaturationDetection = i.maxSaturation;
+		
 	}
 }

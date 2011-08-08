@@ -93,43 +93,7 @@ public class FieldModel {
 		compassCorrection = in;
 	}
 
-	/*
-	 * Take a tank update, using the gpstransform translate coords back to fieldspace from gps lat/lon
-	 */
-	public void updateTank(TankServer.TankUpdate t){
-		boolean updated = false;
-		for(Tank tank : tankList){
-			if(t.tankId == tank.tankId){
-				if(t.type == TankServer.TankUpdate.COMPASS){
-					tank.heading = (t.heading + compassCorrection) % 360;
-
-				} else if (t.type == TankServer.TankUpdate.POSITION){
-					tank.lat = t.lat;
-					tank.lon = t.lon;
-					tank.setPositionFromGPS(t.lat, t.lon);
-					Point2D p = null;
-					p = tankTransform.transform((Point2D)tank.worldPosition, p);
-
-					tank.fieldPosition = new Point((int)p.getX(), (int)p.getY());
-					//tank.fieldPosition = new Point(200,200);
-					//parent.log(tank);
-
-				} else if (t.type == TankServer.TankUpdate.QUIT){
-					//remove this tank
-					tankList.remove(tank);
-					parent.log("Removed tank: " + t.tankId);
-				}
-				updated = true;
-			}
-		}
-
-		if(!updated){
-			Tank tank = new Tank(t.tankId, new Point(200 + (int)(Math.random() * 30),200), this);
-			tankList.add(tank);
-			parent.log("new tank");
-		}
-
-	}
+	
 
 
 	/*

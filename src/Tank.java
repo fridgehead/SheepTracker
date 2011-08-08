@@ -38,14 +38,6 @@ public class Tank {
 		currentTarget = new PVector(0,0);
 	}
 
-	/*
-	 * magic numbers are AWESOME
-	 */
-	public void setPositionFromGPS(double lat, double lon){
-		worldPosition.x = (float)(lon*60*1852*Math.cos(lat));
-		worldPosition.y  = (float)(lat*60*1852);
-
-	}
 
 	public String toString(){
 		return "Tank : " + tankId + ", worldpos: " + worldPosition + ", fieldPosition: " + fieldPosition + "\n" +

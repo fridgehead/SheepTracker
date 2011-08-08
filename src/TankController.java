@@ -27,13 +27,13 @@ public class TankController extends Thread {
 			}
 		}
 
-		//if(serIndex == -1){
-			//parent.log("!!!!!! -- NO SERIAL PORT FOUND!!!!!!!");
+		if(serIndex == -1){
+			parent.log("!!!!!! -- NO SERIAL PORT FOUND!!!!!!!");
 
-		//} else {
+		} else {
 			serial = new Serial(parent, Serial.list()[0], 115200);
-			//serial.write("HELLO");
-		//}
+		//	serial.write("HELLO");
+		}
 
 		for(int i = 0; i < 3; i++){
 			tankCommandList.add( TankCommand.IDLE);
@@ -44,7 +44,7 @@ public class TankController extends Thread {
 	}
 
 	private void sendString(int tankId, String in){
-		 serial.write("$" + tankId + in);
+		 //serial.write("$" + tankId + in);
 		parent.log("SERIAL COMMAND: $" + tankId + in);
 	}
 

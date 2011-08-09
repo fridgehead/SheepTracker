@@ -216,7 +216,9 @@ public class SheepTest extends PApplet {
 			for(TankIdentifier.TankPoint t : tankIdentifier.tankPointList){
 				fill(t.colour.getRed(), t.colour.getGreen(), t.colour.getBlue());
 				ellipse(330 + t.position.x, t.position.y, 10,10);
-				
+				textFont(niceFont,15);
+				fill(255,255,255);
+				text(t.pointId, 350 + t.position.x, t.position.y);
 			}
 			
 			

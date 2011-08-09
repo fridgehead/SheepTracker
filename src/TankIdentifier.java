@@ -50,7 +50,8 @@ public class TankIdentifier {
 		colorBuffer = colourFrame;
 		opencv.copy(blobframe);
 		colorBuffer.loadPixels();
-
+		tankPointList.clear();
+		int identCount = 0;
 		for(IdentifierSettings b : identSettings){
 
 			int minBlobSize = b.minBlobSize;
@@ -91,18 +92,21 @@ public class TankIdentifier {
 						TankPoint t = new TankPoint();
 						t.colour = new Color(avgRed, avgGreen, avgBlue);
 						t.position = test.centroid;
+						t.pointId = identCount; 
 						tankPointList.add(t);
 
 					}
 
 				}
 			}
+			identCount++;
 		}
 	}
 
 	public class TankPoint {
 		public Color colour;
 		public Point position;
+		public int pointId = 0;
 	}
 
 }

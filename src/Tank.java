@@ -20,7 +20,7 @@ public class Tank {
 	public boolean selected = false;
 	public float desiredAngle = 0.0f;
 
-	FieldModel parent;
+	public FieldModel parent;
 	PVector loc;
 
 	public PVector currentTarget;	//in field-space

@@ -13,6 +13,7 @@ import hypermedia.video.OpenCV;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
+import processing.core.PVector;
 
 
 /*
@@ -30,11 +31,23 @@ public class TankIdentifier {
 
 	private IdentifierSettings[] identSettings = new IdentifierSettings[7];
 	private OpenCV opencv;
-	public ArrayList<TankPoint> tankPointList;	//temp arraylist of tanks. 
+	public ArrayList<TankPoint> tankPointList;	//temp arraylist of tanks.
+	private ArrayList<Point> possibleTanks = new ArrayList<Point>();
+	public ArrayList<Tank> finalTankList = new ArrayList<Tank>();	//final tank list
 	private PerspectiveTransform tankTransform;
 
+	private int[][] pairId = new int[3][2];
+	private float[][] lastFrameAngles = new float[3][5];
+	public float maxTankSize = 10;
 
 
+/*
+ * violet -> red  = 5 -> 0
+
+orange -> blue = 1 -> 4
+
+blue -> red = 4 -> 0
+ */
 	public  TankIdentifier(SheepTest p){
 		this.parent = p;
 		this.opencv = parent.opencv;
@@ -42,6 +55,17 @@ public class TankIdentifier {
 		colorBuffer = parent.createImage(640,480, PConstants.RGB);
 		tankPointList = new ArrayList<TankPoint>();
 
+		// zero element is the front of the tank
+		pairId[0][0] = 5;
+		pairId[0][1] = 0;
+		
+		pairId[1][0] = 1;
+		pairId[1][1] = 4;
+		
+		pairId[2][0] = 4;
+		pairId[2][1] = 0;
+		
+		
 	}
 
 	/* first 3 are assumed to be tanks
@@ -111,6 +135,7 @@ public class TankIdentifier {
 			}
 			identCount++;
 		}
+		identTanks();
 	}
 
 	/*
@@ -149,15 +174,40 @@ public class TankIdentifier {
 	 * 
 	 */
 	private void identTanks(){
-		for (TankPoint src : tankPointList){
-			for (TankPoint dst : tankPointList){
-				if(src != dst){
-					//compare the world distances of them
-
-
-
+		finalTankList.clear();
+		for(int i = 0; i < pairId.length; i++){
+			//get all points that are part of this pair
+			for(TankPoint srcPoint : tankPointList){
+				for(TankPoint dstPoint : tankPointList){
+					
+					if(srcPoint.colourId == pairId[i][0] && dstPoint.colourId == pairId[i][1]){
+						//possible pair, check its distance
+						float dist = (float) srcPoint.position.distance(dstPoint.position);
+						if(dist < maxTankSize){
+							//not too far away, check its angles
+							
+							
+							srcPoint.pairId = i;
+							dstPoint.pairId = i;
+							
+							PVector srcPos = new PVector(srcPoint.position.x , srcPoint.position.y);
+							PVector dstPos = new PVector(dstPoint.position.x , dstPoint.position.y);
+							float angle = PVector.angleBetween(new PVector(0,1), PVector.sub(srcPos, dstPos));
+							if(srcPoint.position.x > dstPoint.position.x){
+								angle = (float) ((Math.PI * 2 )-angle);
+							}
+							Tank t = new Tank(i, srcPoint.position, null);
+							t.heading = (int) Math.toDegrees(angle);
+							//System.out.println("ang: " + angle);
+							finalTankList.add(t);
+							
+							
+						}
+					}
+					
 				}
 			}
+			
 		}
 	}
 

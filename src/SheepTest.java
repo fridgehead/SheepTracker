@@ -36,6 +36,8 @@ public class SheepTest extends PApplet {
 	int saturationDetection = 0;  //saturation threshhold at which we think this is a sheep
 	int cameraBlur = 6;
 
+	int maxTankSize = 10;
+	
 	public int mode = 0;
 	public static final int MODE_IDLE = 0;
 	public static final int MODE_CONFIG_SHEEP_SPACE = 1;
@@ -79,11 +81,15 @@ public class SheepTest extends PApplet {
 		controlP5.addSlider("cameraBlur",0,255,0,					20,180,150,14);
 		minSlider = controlP5.addSlider("minBlobSize",0,4000,0,		20,200,150,14);
 		maxSlider = controlP5.addSlider("maxBlobSize",0,5500,0,		20,220,150,14);
-		sampleArea = controlP5.addSlider("colourSampleArea",0,30,0,	20,240,150,14);
+		sampleArea = controlP5.addSlider("colourSampleArea",1,30,1,	20,240,150,14);
 		saturationSlider = controlP5.addSlider("saturationDetection",0,255,0,	20,260,150,14);
 		hueLowSlider = controlP5.addSlider("colourThreshLow",0,255,0,	20,280,150,14);
 		hueHighSlider = controlP5.addSlider("colourThreshHigh",0,255,0,	20,300,150,14);
+		
+		controlP5.addSlider("maxTankSize",0,255,0,					20,320,150,14);
+		
 		controlP5.addBang("CameraTest",20,350, 20,20);
+		
 
 		//config bangs
 		controlP5.addBang("ConfigSheepPerspective",20,400, 20,20);
@@ -169,6 +175,7 @@ public class SheepTest extends PApplet {
 	
 
 		fieldModel.setCompassCorrection(compassCorrection);
+		tankIdentifier.maxTankSize = maxTankSize;
 
 		if(useCamera){
 			opencv.read();
@@ -211,13 +218,14 @@ public class SheepTest extends PApplet {
 				ellipse(b.x / 4, b.y / 4, 10,10);
 			}
 			fieldModel.updateSheepPositions(sheepFinder.sheepList);
+			fieldModel.updateTankPositions(tankIdentifier.finalTankList);
 			fieldModel.draw(new Point(330,0));
 			for(TankPoint t : tankIdentifier.tankPointList){
 				fill(t.colour.getRed(), t.colour.getGreen(), t.colour.getBlue());
 				ellipse(330 + t.position.x, t.position.y, 10,10);
 				textFont(niceFont,15);
 				fill(255,255,255);
-				text("P" + t.colourName, 340 + t.position.x, t.position.y);
+				text("P" + t.colourName + " " + t.pairId, 340 + t.position.x, t.position.y);
 			}
 			
 			

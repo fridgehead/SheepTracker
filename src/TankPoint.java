@@ -12,6 +12,7 @@ public class TankPoint {
 	public int pointId = 0;
 	public String colourName = "";
 	public int colourId = -1;
+	public int pairId = -1;
 
 	private String[] names = new String[9];
 	private int[] colours = new int[9];

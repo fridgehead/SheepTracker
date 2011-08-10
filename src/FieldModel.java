@@ -11,6 +11,7 @@ import javax.media.jai.*;
 
 import org.yaml.snakeyaml.Yaml;
 
+import processing.core.PApplet;
 import processing.core.PImage;
 
 
@@ -81,7 +82,12 @@ public class FieldModel {
 		compassCorrection = in;
 	}
 
-	
+	public void updateTankPositions(ArrayList<Tank> tankList){
+		this.tankList = tankList;
+		for(Tank t : tankList){
+			t.parent = this;
+		}
+	}
 
 
 	/*
@@ -172,7 +178,7 @@ public class FieldModel {
 			
 			parent.pushMatrix();
 			parent.translate((float)t.fieldPosition.getX() ,(float)t.fieldPosition.getY());
-			parent.rotate(parent.radians(t.heading));
+			parent.rotate(PApplet.radians(t.heading));
 			parent.translate(-16,-16);
 			
 			parent.image(tankImage, 0,0 );

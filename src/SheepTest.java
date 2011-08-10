@@ -88,9 +88,7 @@ public class SheepTest extends PApplet {
 		//config bangs
 		controlP5.addBang("ConfigSheepPerspective",20,400, 20,20);
 		controlP5.addBang("IdleMode",20,450, 20,20);
-		controlP5.addBang("GpsConfigMode",20,500, 20,20);
-		controlP5.addBang("GpsReadPosition",120,500, 20,20);
-		controlP5.addBang("RunMode",20,550, 20,20);
+		controlP5.addBang("RunMode",20,500, 20,20);
 		controlP5.addBang("BGSubtractMode",20,590, 20,20);
 		controlP5.addBang("remember",120,590, 20,20);
 
@@ -132,6 +130,7 @@ public class SheepTest extends PApplet {
 		sheepCalibrationPoints[1] = new Point.Float(640,0);
 		sheepCalibrationPoints[2] = new Point.Float(640,480);
 		sheepCalibrationPoints[3] = new Point.Float(0,480);
+		tankIdentifier.setTankTransform(sheepCalibrationPoints);
 
 
 
@@ -152,18 +151,18 @@ public class SheepTest extends PApplet {
 		fill(0,61,130);
 		stroke(0,61,130);
 		line(0,730,1280,730);
-		text("SheepTracker v0.1", 10, 780);
+		text("SheepTracker v2", 10, 780);
 		textFont(niceFont, 10);
 		switch(mode){
 
 		case(MODE_IDLE):
 			fill(255,0,0);
-		text("Idle", 10, 720);
-		break;
+			text("Idle", 10, 720);
+			break;
 		case(MODE_CONFIG_SHEEP_SPACE):
 			fill(255,0,0);
-		text("Configure Sheep transform", 10, 720);
-		break;
+			text("Configure Sheep transform", 10, 720);
+			break;
 		
 		}
 
@@ -218,7 +217,7 @@ public class SheepTest extends PApplet {
 				ellipse(330 + t.position.x, t.position.y, 10,10);
 				textFont(niceFont,15);
 				fill(255,255,255);
-				text(t.pointId, 350 + t.position.x, t.position.y);
+				text("P" + t.pointId, 340 + t.position.x, t.position.y);
 			}
 			
 			
@@ -263,6 +262,7 @@ public class SheepTest extends PApplet {
 				Point.Float p = new Point.Float(mouseX - 330, mouseY);
 				sheepCalibrationPoints[quadCounter] = p;
 				fieldModel.setSheepTransform(sheepCalibrationPoints);
+				tankIdentifier.setTankTransform(sheepCalibrationPoints);
 
 				quadCounter = 0;			
 
@@ -296,9 +296,8 @@ public class SheepTest extends PApplet {
 		} else if(theEvent.name().equals("IdleMode") ) {
 			mode = MODE_IDLE;
 
-		} else if(theEvent.name().equals("GpsConfigMode") ) {
-			mode = MODE_CONFIG_GPS_SPACE;
-
+		
+			
 		} else if(theEvent.name().equals("CameraTest") ) {
 			useCamera = !useCamera;
 

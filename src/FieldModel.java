@@ -45,7 +45,6 @@ public class FieldModel {
 		p[2] = new Point.Float(640,480);
 		p[3] = new Point.Float(0,480);
 		setSheepTransform(new CalibrationQuad(p));
-		setTankTransform(new CalibrationQuad(p));
 		sheepImage = parent.loadImage("sheep.png");
 		tankImage = parent.loadImage("tank.png");
 		yaml = new Yaml();
@@ -68,20 +67,9 @@ public class FieldModel {
 				parent.log("Serial port is : " + serialPort);
 				
 				ArrayList quadList = (ArrayList)objMap.get("gpsQuad");
-
-				for(Object quad: quadList){
-					Map<String, Object> qPoint = (Map<String, Object>)quad;
-					int id =  ((Integer)qPoint.get("id")).intValue();
-					float xp = ((Double)qPoint.get("x")).floatValue();
-					float yp = ((Double)qPoint.get("y")).floatValue();
-					gpsPoints[id] = new Point.Float(xp,yp);
-					parent.log("loaded gps coord: " + id + " - " + gpsPoints[id]);
-					
-					
-				}
+				
 			}
-			
-			setTankTransform(gpsPoints);
+		
 		} catch (Exception e){
 			e.printStackTrace();
 		}
@@ -147,28 +135,7 @@ public class FieldModel {
 		System.out.println("SheepTransform: " + sheepTransform);
 	}
 
-	public void setTankTransform(Point.Float[] p){
-		setTankTransform(new CalibrationQuad(p));
-	}
-
-	/*
-	 * Maps all sheep coordinates from camera space to field space
-	 */
-	public void setTankTransform(CalibrationQuad quad){
-		tankTransform = new PerspectiveTransform();
-		tankTransform = PerspectiveTransform.getQuadToQuad((float)quad.p1.x, (float)quad.p1.y, 
-				(float)quad.p2.x, (float)quad.p2.y, 
-				(float)quad.p3.x, (float)quad.p3.y,
-				(float)quad.p4.x, (float)quad.p4.y, 
-				0.0f, 0.0f, 
-				800.0f, 0.0f, 
-				800.0f, 600.0f, 
-				0.0f, 600.0f);
-
-
-		System.out.println("Tank Transform: " + tankTransform);
-	}
-
+	
 
 	public ArrayList<Point2D> getSheepList(){
 		return sheepList;

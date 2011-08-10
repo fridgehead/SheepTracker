@@ -1,7 +1,12 @@
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
+
+import javax.media.jai.PerspectiveTransform;
+
+
 
 import hypermedia.video.Blob;
 import hypermedia.video.OpenCV;
@@ -26,6 +31,7 @@ public class TankIdentifier {
 	private IdentifierSettings[] identSettings = new IdentifierSettings[7];
 	private OpenCV opencv;
 	public ArrayList<TankPoint> tankPointList;	//temp arraylist of tanks. 
+	private PerspectiveTransform tankTransform;
 	
 
 
@@ -91,7 +97,11 @@ public class TankIdentifier {
 					if(parent.hue(avgColor) >= b.lowerHue && parent.hue(avgColor) <= b.higherHue && parent.saturation(avgColor) > maxSaturationDetection){
 						TankPoint t = new TankPoint();
 						t.colour = new Color(avgRed, avgGreen, avgBlue);
-						t.position = test.centroid;
+						//convert coords to field-space
+						Point2D p = null;
+
+						p = tankTransform.transform(test.centroid, p);
+						t.position = new Point((int)p.getX(), (int)p.getY());
 						t.pointId = identCount; 
 						tankPointList.add(t);
 
@@ -100,6 +110,54 @@ public class TankIdentifier {
 				}
 			}
 			identCount++;
+		}
+	}
+	
+	/*
+	 * Maps all sheep coordinates from camera space to field space
+	 */
+	public void setTankTransform(FieldModel.CalibrationQuad quad){
+		tankTransform = new PerspectiveTransform();
+		tankTransform = PerspectiveTransform.getQuadToQuad(quad.p1.x, quad.p1.y, 
+				quad.p2.x, quad.p2.y, 
+				quad.p3.x, quad.p3.y,
+				quad.p4.x, quad.p4.y, 
+				0.0f, 0.0f, 
+				800.0f, 0.0f, 
+				800.0f, 600.0f, 
+				0.0f, 600.0f);
+
+
+		System.out.println("TankTransform: " + tankTransform);
+	}
+	public void setTankTransform(Point.Float[] p){
+		setTankTransform(new FieldModel.CalibrationQuad(p));
+	}
+
+	
+	/* take a snapshot of the tanks
+	 * 
+	 */
+	public void tankSnapShot(){
+		
+	}
+	
+	/** skim the tank points list and generate pairs of coloured blobs
+	 * determine their distance, discard ones that are too large
+	 * compare the angles of them (w.r.t. the "field north" ) and discard ones that are drastically different from already
+	 * tracked tanks
+	 * 
+	 */
+	private void identTanks(){
+		for (TankPoint src : tankPointList){
+			for (TankPoint dst : tankPointList){
+				if(src != dst){
+					//compare the world distances of them
+					
+					
+					
+				}
+			}
 		}
 	}
 

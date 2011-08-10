@@ -50,7 +50,7 @@ public class SheepTest extends PApplet {
 
 	//quad drawing things
 	int quadCounter = 0;
-	FieldModel.CalibrationQuad sheepCalibQuad;
+	CalibrationQuad sheepCalibQuad;
 	Point.Float[] sheepCalibrationPoints = new Point.Float[4];
 
 	
@@ -212,12 +212,12 @@ public class SheepTest extends PApplet {
 			}
 			fieldModel.updateSheepPositions(sheepFinder.sheepList);
 			fieldModel.draw(new Point(330,0));
-			for(TankIdentifier.TankPoint t : tankIdentifier.tankPointList){
+			for(TankPoint t : tankIdentifier.tankPointList){
 				fill(t.colour.getRed(), t.colour.getGreen(), t.colour.getBlue());
 				ellipse(330 + t.position.x, t.position.y, 10,10);
 				textFont(niceFont,15);
 				fill(255,255,255);
-				text("P" + t.pointId, 340 + t.position.x, t.position.y);
+				text("P" + t.colourName, 340 + t.position.x, t.position.y);
 			}
 			
 			

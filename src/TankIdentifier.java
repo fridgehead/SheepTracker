@@ -32,7 +32,7 @@ public class TankIdentifier {
 	private OpenCV opencv;
 	public ArrayList<TankPoint> tankPointList;	//temp arraylist of tanks. 
 	private PerspectiveTransform tankTransform;
-	
+
 
 
 	public  TankIdentifier(SheepTest p){
@@ -95,8 +95,8 @@ public class TankIdentifier {
 					int avgColor =  parent.color (avgRed,avgGreen,avgBlue);
 
 					if(parent.hue(avgColor) >= b.lowerHue && parent.hue(avgColor) <= b.higherHue && parent.saturation(avgColor) > maxSaturationDetection){
-						TankPoint t = new TankPoint();
-						t.colour = new Color(avgRed, avgGreen, avgBlue);
+						TankPoint t = new TankPoint(this);
+						t.setColour(new Color(avgRed, avgGreen, avgBlue));
 						//convert coords to field-space
 						Point2D p = null;
 
@@ -112,11 +112,11 @@ public class TankIdentifier {
 			identCount++;
 		}
 	}
-	
+
 	/*
 	 * Maps all sheep coordinates from camera space to field space
 	 */
-	public void setTankTransform(FieldModel.CalibrationQuad quad){
+	public void setTankTransform(CalibrationQuad quad){
 		tankTransform = new PerspectiveTransform();
 		tankTransform = PerspectiveTransform.getQuadToQuad(quad.p1.x, quad.p1.y, 
 				quad.p2.x, quad.p2.y, 
@@ -131,17 +131,17 @@ public class TankIdentifier {
 		System.out.println("TankTransform: " + tankTransform);
 	}
 	public void setTankTransform(Point.Float[] p){
-		setTankTransform(new FieldModel.CalibrationQuad(p));
+		setTankTransform(new CalibrationQuad(p));
 	}
 
-	
+
 	/* take a snapshot of the tanks
 	 * 
 	 */
 	public void tankSnapShot(){
-		
+
 	}
-	
+
 	/** skim the tank points list and generate pairs of coloured blobs
 	 * determine their distance, discard ones that are too large
 	 * compare the angles of them (w.r.t. the "field north" ) and discard ones that are drastically different from already
@@ -153,18 +153,12 @@ public class TankIdentifier {
 			for (TankPoint dst : tankPointList){
 				if(src != dst){
 					//compare the world distances of them
-					
-					
-					
+
+
+
 				}
 			}
 		}
-	}
-
-	public class TankPoint {
-		public Color colour;
-		public Point position;
-		public int pointId = 0;
 	}
 
 }

@@ -3,6 +3,8 @@ import java.awt.Container;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 
 import javax.media.jai.PerspectiveTransform;
 
@@ -32,13 +34,16 @@ public class TankIdentifier {
 	private IdentifierSettings[] identSettings = new IdentifierSettings[7];
 	private OpenCV opencv;
 	public ArrayList<TankPoint> tankPointList;	//temp arraylist of tanks.
-	private ArrayList<Point> possibleTanks = new ArrayList<Point>();
+	private ArrayList<Tank> possibleTanks = new ArrayList<Tank>();
+	public ArrayList<Tank> snapShotTanks = new ArrayList<Tank>();
 	public ArrayList<Tank> finalTankList = new ArrayList<Tank>();	//final tank list
 	private PerspectiveTransform tankTransform;
 
 	private int[][] pairId = new int[3][2];
 	private float[][] lastFrameAngles = new float[3][5];
 	public float maxTankSize = 10;
+	
+	private boolean snapshotTaken = false;
 
 
 /*
@@ -81,6 +86,7 @@ blue -> red = 4 -> 0
 		opencv.copy(blobframe);
 		colorBuffer.loadPixels();
 		tankPointList.clear();
+		possibleTanks.clear();
 		int identCount = 0;
 		for(IdentifierSettings b : identSettings){
 
@@ -161,9 +167,11 @@ blue -> red = 4 -> 0
 
 
 	/* take a snapshot of the tanks
+	 * store the tank data in tankSnapshot<>
 	 * 
 	 */
 	public void tankSnapShot(){
+		snapshotTaken = true;
 
 	}
 
@@ -175,6 +183,7 @@ blue -> red = 4 -> 0
 	 */
 	private void identTanks(){
 		finalTankList.clear();
+		possibleTanks.clear();
 		for(int i = 0; i < pairId.length; i++){
 			//get all points that are part of this pair
 			for(TankPoint srcPoint : tankPointList){
@@ -190,16 +199,19 @@ blue -> red = 4 -> 0
 							srcPoint.pairId = i;
 							dstPoint.pairId = i;
 							
+							
 							PVector srcPos = new PVector(srcPoint.position.x , srcPoint.position.y);
 							PVector dstPos = new PVector(dstPoint.position.x , dstPoint.position.y);
 							float angle = PVector.angleBetween(new PVector(0,1), PVector.sub(srcPos, dstPos));
+							//take this angle and look for tanks that have similar angles.
+							
 							if(srcPoint.position.x > dstPoint.position.x){
 								angle = (float) ((Math.PI * 2 )-angle);
 							}
 							Tank t = new Tank(i, srcPoint.position, null);
 							t.heading = (int) Math.toDegrees(angle);
 							//System.out.println("ang: " + angle);
-							finalTankList.add(t);
+							possibleTanks.add(t);
 							
 							
 						}
@@ -209,6 +221,59 @@ blue -> red = 4 -> 0
 			}
 			
 		}
-	}
+		if(snapshotTaken){
+			System.out.println("SNAPSHOT: " );
 
+			snapshotTaken = false;
+			snapShotTanks = new ArrayList<Tank>(possibleTanks);
+			Collections.copy(snapShotTanks, possibleTanks);
+			
+		}
+		
+		//for each possible tank see if its angle is near enough to the snapshot list
+		System.out.println("---- tank dump-------");
+		int ct = 0;
+		for(Tank pt : possibleTanks){
+			
+			for(Tank st : snapShotTanks){
+				
+				float ang1 = (float)Math.toRadians(pt.heading) ;
+				
+				float ang2 = (float)Math.toRadians(st.heading) ;
+				float angDiff = (float) normalizeAngle(ang1 - ang2, 0) - ang2;
+				
+				
+				
+				if(Math.abs(angDiff) > 0.2){
+					
+					pt.tankId = -1;
+					
+				}
+				System.out.println("possible tank : " + ct + " - possible tankID " + pt.tankId + " -angdiff = " + angDiff) ;
+				
+			}
+			ct++;
+		}
+		
+		Iterator<Tank> itr = possibleTanks.iterator();
+		 
+	    //remove 2 from ArrayList using Iterator's remove method.
+	    
+	    while(itr.hasNext()){
+	    	Tank pt = (Tank)itr.next();
+			if(pt.tankId != -1){
+				//itr.remove();
+				finalTankList.add(pt);
+				snapShotTanks.add(pt);
+			
+			}
+		}
+	    
+
+		
+		
+	}
+	public static double normalizeAngle(double a, double center) {
+	       return a - (Math.PI * 2) * Math.floor((a + Math.PI - center) / (Math.PI * 2));
+	   }
 }

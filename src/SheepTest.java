@@ -97,6 +97,7 @@ public class SheepTest extends PApplet {
 		controlP5.addBang("RunMode",20,500, 20,20);
 		controlP5.addBang("BGSubtractMode",20,590, 20,20);
 		controlP5.addBang("remember",120,590, 20,20);
+		controlP5.addBang("tankSnapShot",220,590, 20,20);
 
 
 		tankList = controlP5.addListBox("tankListBox",200,370,120,120);
@@ -218,7 +219,7 @@ public class SheepTest extends PApplet {
 				ellipse(b.x / 4, b.y / 4, 10,10);
 			}
 			fieldModel.updateSheepPositions(sheepFinder.sheepList);
-			fieldModel.updateTankPositions(tankIdentifier.finalTankList);
+			fieldModel.updateTankPositions(tankIdentifier.snapShotTanks);
 			fieldModel.draw(new Point(330,0));
 			for(TankPoint t : tankIdentifier.tankPointList){
 				fill(t.colour.getRed(), t.colour.getGreen(), t.colour.getBlue());
@@ -317,6 +318,8 @@ public class SheepTest extends PApplet {
 			log("background subtract mode : " + backgroundSubtractMode);
 		} else if(theEvent.name().equals("remember") ) {
 			sheepFinder.remember();
+		} else if(theEvent.name().equals("tankSnapShot") ) {
+				tankIdentifier.tankSnapShot();
 		} else {
 			identSettings[currentEditing] = new IdentifierSettings();
 			identSettings[currentEditing].colourSampleArea = colourSampleArea;

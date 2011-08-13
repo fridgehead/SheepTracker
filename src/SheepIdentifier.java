@@ -50,7 +50,7 @@ public class SheepIdentifier {
 
 		} else {
 
-		    
+
 			opencv.blur(OpenCV.BLUR, cameraBlur);
 			removeGreen(opencv.image());
 			//image(removeGreenBuffer, 0,0);
@@ -70,37 +70,37 @@ public class SheepIdentifier {
 			int avgBlue = 0;
 
 			Blob test = blobs[i];
-			if(test.area > minBlobSize || test.area > maxBlobSize) {
-				for(int px = -colourSampleArea; px < colourSampleArea; px++) {
-					for(int py = -colourSampleArea; py < colourSampleArea; py++) {      
-						if(test.centroid.x + px < 640 && test.centroid.x + px > 0 && test.centroid.y + py < 480 && test.centroid.y + py > 0) {
-							pixelCount ++;
+			//if(test.area > minBlobSize && test.area < maxBlobSize) {
+			for(int px = -colourSampleArea; px < colourSampleArea; px++) {
+				for(int py = -colourSampleArea; py < colourSampleArea; py++) {      
+					if(test.centroid.x + px < 640 && test.centroid.x + px > 0 && test.centroid.y + py < 480 && test.centroid.y + py > 0) {
+						pixelCount ++;
 
-							avgRed +=   ( colorBuffer.pixels[(test.centroid.x + px)  + (test.centroid.y + py) * 640    ] >> 16) & 0xFF;
-							avgGreen += ( colorBuffer.pixels[(test.centroid.x + px)  + (test.centroid.y + py) * 640    ] >> 8) & 0xFF;
-							avgBlue +=  ( colorBuffer.pixels[(test.centroid.x + px)  + (test.centroid.y + py) * 640    ] ) & 0xFF;
-						}
+						avgRed +=   ( colorBuffer.pixels[(test.centroid.x + px)  + (test.centroid.y + py) * 640    ] >> 16) & 0xFF;
+						avgGreen += ( colorBuffer.pixels[(test.centroid.x + px)  + (test.centroid.y + py) * 640    ] >> 8) & 0xFF;
+						avgBlue +=  ( colorBuffer.pixels[(test.centroid.x + px)  + (test.centroid.y + py) * 640    ] ) & 0xFF;
 					}
 				}
-				avgRed /= pixelCount;
-				avgGreen /= pixelCount;
-				avgBlue /= pixelCount;
-				int avgColor =  parent.color (avgRed,avgGreen,avgBlue);
+			}
+			avgRed /= pixelCount;
+			avgGreen /= pixelCount;
+			avgBlue /= pixelCount;
+			int avgColor =  parent.color (avgRed,avgGreen,avgBlue);
 
 
 
-				if(parent.saturation(avgColor) < sheepSaturationDetection) {      //this blob is a sheep as its colour saturation is low (close to white)
-					
-					sheepList.add(blobs[i].centroid );
+			if(parent.saturation(avgColor) < sheepSaturationDetection) {      //this blob is a sheep as its colour saturation is low (close to white)
 
-				}
+				sheepList.add(blobs[i].centroid );
+
+			}
 
 
-				/*fill(avgColor);
+			/*fill(avgColor);
 
 	      ellipse(blobs[i].centroid.x, blobs[i].centroid.y,20,20);   //draw the blob with the average colour underneath it
 	      fill(0,0,0);*/
-			}
+			//}
 		}
 		/* handy test for grid of sheep
 	  sheepList.clear();
@@ -110,7 +110,7 @@ public class SheepIdentifier {
     	  }
       }*/
 	}
-	
+
 	public void remember(){
 		parent.log("remembered frame");
 		opencv.remember();
@@ -142,6 +142,6 @@ public class SheepIdentifier {
 		greenThreshHigh = i.higherHue;
 		colourSampleArea = i.colourSampleArea;  //radius of area to colour sample around blob centroids
 		sheepSaturationDetection = i.maxSaturation;
-		
+
 	}
 }

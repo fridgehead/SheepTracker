@@ -219,14 +219,14 @@ public class SheepTest extends PApplet {
 				ellipse(b.x / 4, b.y / 4, 10,10);
 			}
 			fieldModel.updateSheepPositions(sheepFinder.sheepList);
-			fieldModel.updateTankPositions(tankIdentifier.snapShotTanks);
+			fieldModel.updateTankPositions(tankIdentifier.finalTankList);
 			fieldModel.draw(new Point(330,0));
 			for(TankPoint t : tankIdentifier.tankPointList){
 				fill(t.colour.getRed(), t.colour.getGreen(), t.colour.getBlue());
 				ellipse(330 + t.position.x, t.position.y, 10,10);
 				textFont(niceFont,15);
 				fill(255,255,255);
-				text("P" + t.colourName + " " + t.pairId, 340 + t.position.x, t.position.y);
+				text("p: " + t.pairId, 340 + t.position.x, t.position.y);
 			}
 			
 			

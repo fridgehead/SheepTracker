@@ -12,6 +12,7 @@ public class Tank {
 	public int accuracy = 0;
 	public int type;
 	public int tankId;
+	public boolean isTracked = false;
 
 	public Point fieldPosition;
 	public Point.Float worldPosition;//in x/y not lat/lon

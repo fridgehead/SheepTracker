@@ -208,7 +208,8 @@ blue -> red = 4 -> 0
 							if(srcPoint.position.x > dstPoint.position.x){
 								angle = (float) ((Math.PI * 2 )-angle);
 							}
-							Tank t = new Tank(i, srcPoint.position, null);
+							Point newP = new Point((srcPoint.position.x + dstPoint.position.x )/ 2, (srcPoint.position.y + dstPoint.position.y )/ 2);
+							Tank t = new Tank(i, newP, null);
 							t.heading = (int) Math.toDegrees(angle);
 							//System.out.println("ang: " + angle);
 							possibleTanks.add(t);
@@ -231,7 +232,7 @@ blue -> red = 4 -> 0
 		}
 		
 		//for each possible tank see if its angle is near enough to the snapshot list
-		System.out.println("---- tank dump-------");
+		System.out.println("---- tank dump-------pt: " + possibleTanks.size() + " st: " + snapShotTanks.size());
 		int ct = 0;
 		for(Tank pt : possibleTanks){
 			
@@ -240,36 +241,44 @@ blue -> red = 4 -> 0
 				float ang1 = (float)Math.toRadians(pt.heading) ;
 				
 				float ang2 = (float)Math.toRadians(st.heading) ;
-				float angDiff = (float) normalizeAngle(ang1 - ang2, 0) - ang2;
+				float angDiff = (float)(normalizeAngle(normalizeAngle(ang2, 0) - normalizeAngle(ang1, 0), 0));
 				
 				
-				
-				if(Math.abs(angDiff) > 0.2){
+				System.out.print("possible tank : " + ct + " - tankID " + pt.tankId + " - angdiff = " + angDiff) ;
+				if(pt.isTracked == false){
+					if(Math.abs(angDiff) > 0.2){
 					
-					pt.tankId = -1;
+						pt.tankId = -1;
+						pt.isTracked = false;
+						
 					
+						System.out.println("..discarding");
+					} else {
+						pt.tankId = ct;
+						pt.isTracked = true;
+						System.out.println("..keeping");
+					}
+				} else {
+					System.out.println("..is already tracked");
 				}
-				System.out.println("possible tank : " + ct + " - possible tankID " + pt.tankId + " -angdiff = " + angDiff) ;
 				
 			}
 			ct++;
 		}
+		snapShotTanks.clear();
 		
-		Iterator<Tank> itr = possibleTanks.iterator();
-		 
-	    //remove 2 from ArrayList using Iterator's remove method.
-	    
-	    while(itr.hasNext()){
-	    	Tank pt = (Tank)itr.next();
-			if(pt.tankId != -1){
+		for(Tank pt : possibleTanks){
+			if(pt.isTracked){
 				//itr.remove();
 				finalTankList.add(pt);
 				snapShotTanks.add(pt);
 			
-			}
+			} 
 		}
-	    
-
+	    System.out.println("------- snapshottanks---");
+	    for(Tank t : snapShotTanks){
+	    	System.out.println("snaptank - id: " + t.tankId + ", heading: " + t.heading   );	    	
+	    }
 		
 		
 	}

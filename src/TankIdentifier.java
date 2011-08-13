@@ -52,6 +52,10 @@ public class TankIdentifier {
 orange -> blue = 1 -> 4
 
 blue -> red = 4 -> 0
+
+
+//orange -> green
+
  */
 	public  TankIdentifier(SheepTest p){
 		this.parent = p;
@@ -61,6 +65,7 @@ blue -> red = 4 -> 0
 		tankPointList = new ArrayList<TankPoint>();
 
 		// zero element is the front of the tank
+		
 		pairId[0][0] = 5;
 		pairId[0][1] = 0;
 		
@@ -69,7 +74,15 @@ blue -> red = 4 -> 0
 		
 		pairId[2][0] = 4;
 		pairId[2][1] = 0;
+		/*
+		pairId[0][0] = 1;
+		pairId[0][1] = 3;
 		
+		pairId[1][0] = 1;
+		pairId[1][1] = 4;
+		
+		pairId[2][0] = 4;
+		pairId[2][1] = 0;*/
 		
 	}
 

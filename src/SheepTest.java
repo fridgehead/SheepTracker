@@ -125,8 +125,8 @@ public class SheepTest extends PApplet {
 		opencv = new OpenCV( this );
 		opencv.allocate(640,480);
 
-		//opencv.capture(640,480);
-		opencv.movie("data/test2.mov");
+		opencv.capture(640,480);
+		//opencv.movie("data/test2.mov");
 		bgImage = loadImage("data/sheep.jpg");
 
 		sheepFinder = new SheepIdentifier(this);
@@ -190,13 +190,15 @@ public class SheepTest extends PApplet {
 		image(frame,160,0,160,120);
 		sheepFinder.cameraBlur = cameraBlur;
 		sheepFinder.update(frame);
-		tankIdentifier.update(sheepFinder.removeGreenBuffer, sheepFinder.colorBuffer);
+		
+		
 		
 		if(backgroundSubtractMode){
 			image(sheepFinder.bgBuffer, 0,0,160,120);
-
+			tankIdentifier.update(sheepFinder.bgBuffer, sheepFinder.colorBuffer);
 		} else {
 			image(sheepFinder.removeGreenBuffer, 0,0,160,120);
+			tankIdentifier.update(sheepFinder.removeGreenBuffer, sheepFinder.colorBuffer);
 		}
 
 
@@ -226,7 +228,7 @@ public class SheepTest extends PApplet {
 				ellipse(330 + t.position.x, t.position.y, 10,10);
 				textFont(niceFont,15);
 				fill(255,255,255);
-				text("p: " + t.pairId, 340 + t.position.x, t.position.y);
+				text("p: " + t.pairId + "\n" + t.colourName, 340 + t.position.x, t.position.y);
 			}
 			
 			

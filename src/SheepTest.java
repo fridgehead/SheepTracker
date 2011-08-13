@@ -125,8 +125,8 @@ public class SheepTest extends PApplet {
 		opencv = new OpenCV( this );
 		opencv.allocate(640,480);
 
-		opencv.capture(640,480);
-		//opencv.movie("data/test2.mov");
+		//opencv.capture(640,480);
+		opencv.movie("data/test2.mov");
 		bgImage = loadImage("data/sheep.jpg");
 
 		sheepFinder = new SheepIdentifier(this);

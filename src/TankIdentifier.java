@@ -94,6 +94,9 @@ blue -> red = 4 -> 0
 
 	}
 
+	//for each blob, scan it for coloured areas. Identify from these
+	//the current blob tracker is looking for the markers, I want to change it to look
+	//for tanks then read each tank for a marker
 	public void update(PImage blobframe, PImage colourFrame){
 		colorBuffer = colourFrame;
 		opencv.copy(blobframe);
@@ -109,7 +112,7 @@ blue -> red = 4 -> 0
 			float maxSaturationDetection = b.maxSaturation;
 
 
-			Blob[] blobs = opencv.blobs( minBlobSize, maxBlobSize, 100, false, OpenCV.MAX_VERTICES*4 );
+			Blob[] blobs = opencv.blobs( minBlobSize, maxBlobSize, 100, true, OpenCV.MAX_VERTICES*4 );
 
 			for( int i=0; i < blobs.length; i++) {
 				//for each blob work out the average colour under it

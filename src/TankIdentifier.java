@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +45,8 @@ public class TankIdentifier {
 	public float maxTankSize = 10;
 
 	private boolean snapshotTaken = false;
-
+	private String[] names = new String[9];
+	private int[] colours = new int[9];
 
 	/*
 	 * violet -> red  = 5 -> 0
@@ -83,6 +85,27 @@ blue -> red = 4 -> 0
 
 		pairId[2][0] = 4;
 		pairId[2][1] = 0;*/
+		colours[0] = 0xFF0000; 
+		names[0] =  "Red";
+
+		colours[1] = 0xFFA500; 
+		names[1] = "Orange";
+		colours[2] = 0xFFFF00; 
+		names[2] = "Yellow";
+		colours[3] = 0x008000; 
+		names[3] = "Green";
+		colours[4] = 0x0000FF; 
+		names[4] = "Blue";
+		colours[5] = 0xEE82EE; 
+		names[5] = "Violet";
+		//colours[6] = 0xA52A2A; 
+		//names[6] = "Brown";
+		colours[6] = 0x000000; 
+		names[6] = "Black";
+		colours[7] = 0x808080; 
+		names[7] = "Grey";
+		colours[8] = 0xFFFFFF; 
+		names[8] = "White";
 
 	}
 
@@ -117,45 +140,30 @@ blue -> red = 4 -> 0
 			for( int i=0; i < blobs.length; i++) {
 				//for each blob work out the average colour under it
 
-				int pixelCount = 0 ;  //count of how many pixels we examine
-				int avgRed = 0;
-				int avgGreen = 0;
-				int avgBlue = 0;
 
 				Blob test = blobs[i];
-				//	if(test.area > minBlobSize || test.area > maxBlobSize) {
+		        Point[] pts = findColourBlobs(colorBuffer.pixels, test.rectangle);
+		        int ct = 0;
+		        for(Point p : pts){
+		        	if(p.x != -1){
+		        		TankPoint t = new TankPoint(this);
+						t.setColour(new Color((colours[ct] >> 16) & 0xFF, (colours[ct] >> 8) & 0xFF, (colours[ct] ) & 0xFF));
+						//convert coords to field-space
+						Point2D pt = null;
+
+						pt = tankTransform.transform(p, pt);
+						t.position = new Point((int)pt.getX(), (int)pt.getY());
+						t.pointId = identCount; 
+						tankPointList.add(t);
+		        		
+		        		// color c = color((colours[ct] >> 16) & 0xFF, (colours[ct] >> 8) & 0xFF, (colours[ct] ) & 0xFF);
+		        	}
+		        	ct++;
+		        }
+
 				
-				//scan the blobs pixels for colours
-				
-				
-				for(int px = -colourSampleArea; px < colourSampleArea; px++) {
-					for(int py = -colourSampleArea; py < colourSampleArea; py++) {      
-						if(test.centroid.x + px < 640 && test.centroid.x + px > 0 && test.centroid.y + py < 480 && test.centroid.y + py > 0) {
-							pixelCount ++;
 
-							avgRed +=   ( colorBuffer.pixels[(test.centroid.x + px)  + (test.centroid.y + py) * 640    ] >> 16) & 0xFF;
-							avgGreen += ( colorBuffer.pixels[(test.centroid.x + px)  + (test.centroid.y + py) * 640    ] >> 8) & 0xFF;
-							avgBlue +=  ( colorBuffer.pixels[(test.centroid.x + px)  + (test.centroid.y + py) * 640    ] ) & 0xFF;
-						}
-					}
-				}
-				avgRed /= pixelCount;
-				avgGreen /= pixelCount;
-				avgBlue /= pixelCount;
-				int avgColor =  parent.color (avgRed,avgGreen,avgBlue);
 
-				if(parent.hue(avgColor) >= b.lowerHue && parent.hue(avgColor) <= b.higherHue && parent.saturation(avgColor) > maxSaturationDetection){
-					TankPoint t = new TankPoint(this);
-					t.setColour(new Color(avgRed, avgGreen, avgBlue));
-					//convert coords to field-space
-					Point2D p = null;
-
-					p = tankTransform.transform(test.centroid, p);
-					t.position = new Point((int)p.getX(), (int)p.getY());
-					t.pointId = identCount; 
-					tankPointList.add(t);
-
-				}
 
 			}
 			//}
@@ -252,7 +260,7 @@ blue -> red = 4 -> 0
 		}
 
 		//for each possible tank see if its angle is near enough to the snapshot list
-		System.out.println("---- tank dump-------pt: " + possibleTanks.size() + " st: " + snapShotTanks.size());
+		//System.out.println("---- tank dump-------pt: " + possibleTanks.size() + " st: " + snapShotTanks.size());
 		int ct = 0;
 		for(Tank pt : possibleTanks){
 
@@ -264,7 +272,7 @@ blue -> red = 4 -> 0
 				float angDiff = (float)(normalizeAngle(normalizeAngle(ang2, 0) - normalizeAngle(ang1, 0), 0));
 
 
-				System.out.print("possible tank : " + ct + " - tankID " + pt.tankId + " - angdiff = " + angDiff) ;
+				//System.out.print("possible tank : " + ct + " - tankID " + pt.tankId + " - angdiff = " + angDiff) ;
 				if(pt.isTracked == false){
 					if(Math.abs(angDiff) > 0.2){
 
@@ -272,14 +280,14 @@ blue -> red = 4 -> 0
 						pt.isTracked = false;
 
 
-						System.out.println("..discarding");
+						//System.out.println("..discarding");
 					} else {
 						pt.tankId = ct;
 						pt.isTracked = true;
-						System.out.println("..keeping");
+						//System.out.println("..keeping");
 					}
 				} else {
-					System.out.println("..is already tracked");
+					//System.out.println("..is already tracked");
 				}
 
 			}
@@ -295,14 +303,90 @@ blue -> red = 4 -> 0
 
 			} 
 		}
-		System.out.println("------- snapshottanks---");
-		for(Tank t : snapShotTanks){
-			System.out.println("snaptank - id: " + t.tankId + ", heading: " + t.heading   );	    	
-		}
+		//System.out.println("------- snapshottanks---");
+		//for(Tank t : snapShotTanks){
+		//	System.out.println("snaptank - id: " + t.tankId + ", heading: " + t.heading   );	    	
+		//}
 
 
 	}
 	public static double normalizeAngle(double a, double center) {
 		return a - (Math.PI * 2) * Math.floor((a + Math.PI - center) / (Math.PI * 2));
 	}
+	
+	
+
+
+	private Point[] findColourBlobs(int[] in, Rectangle area){
+		int[] colourBinsX = new int[names.length];
+		int[] total = new int[names.length];
+		int[] colourBinsY = new int[names.length];  
+		Point[] ret = new Point[names.length];
+
+		for(int sx = area.x; sx < area.x + area.width; sx++){
+			for(int sy = area.y; sy < area.y + area.height; sy++){
+				int index = toNameIndex(in[sx + sy * 640]);
+				if(index != -1){
+					colourBinsX[index] += sx;
+					colourBinsY[index] += sy;
+					total[index]++;
+				}
+			}
+		}
+
+		for(int i = 0; i < names.length; i++){
+			if(total[i] > 0){
+				int xp = colourBinsX[i] / total[i];
+				int yp = colourBinsY[i] / total[i];
+				ret[i] = new Point(xp,yp);
+			} else {
+				ret[i] = new Point(-1,-1);
+			}
+		}
+		return ret;
+
+	}
+
+	private int toNameIndex(int c) {
+
+
+		int r = (c >> 16) & 0xFF;
+		int g = (c >> 8) & 0xFF;
+		int b = (c) & 0xFF;
+
+		HSLColor hsl = new HSLColor(new Color(r,g,b));
+		int h = (int)(hsl.getHue() * 0.708333333333333);
+		int s = (int)(hsl.getSaturation() * 2.55);
+		int l = (int)(hsl.getLuminance() * 2.55);
+		float ndf1 = 0; 
+		float ndf2 = 0; 
+		float ndf = 0;
+		int cl = -1;
+		float df = -1;
+
+		for(int i = 0; i < names.length; i++)
+		{
+
+			ndf1 = (float)(Math.pow(r - parent.red(colours[i]), 2) + Math.pow(g - parent.green(colours[i]), 2) + Math.pow(b - parent.blue(colours[i]), 2));
+			ndf2 = (float)(Math.abs(Math.pow(h - parent.hue(colours[i]), 2)) + Math.pow(s - parent.saturation(colours[i]), 2) + Math.abs(Math.pow(l - parent.brightness(colours[i]), 2)));
+			ndf = ndf1 + ndf2 * 2;
+			if(df < 0 || df > ndf)
+			{
+				df = ndf;
+				cl = i;
+			}
+		}
+
+		if(cl != -1){
+
+			return cl;
+		} else {
+			return -1;
+		}
+
+
+	}
+
+
+
 }

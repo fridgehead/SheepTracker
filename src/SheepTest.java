@@ -228,7 +228,7 @@ public class SheepTest extends PApplet {
 				ellipse(330 + t.position.x, t.position.y, 10,10);
 				textFont(niceFont,15);
 				fill(255,255,255);
-				text("p: " + t.pairId + "\n" + t.colourName, 340 + t.position.x, t.position.y);
+				//text("p: " + t.pairId + "\n" + t.colourName, 340 + t.position.x, t.position.y);
 			}
 			
 			

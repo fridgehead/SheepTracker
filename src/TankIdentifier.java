@@ -68,14 +68,14 @@ blue -> red = 4 -> 0
 
 		// zero element is the front of the tank
 
-		pairId[0][0] = 5;
+		pairId[0][0] = 4;
 		pairId[0][1] = 0;
 
 		pairId[1][0] = 1;
 		pairId[1][1] = 4;
 
-		pairId[2][0] = 4;
-		pairId[2][1] = 0;
+		pairId[2][0] = 5;
+		pairId[2][1] = 4;
 		/*
 		pairId[0][0] = 1;
 		pairId[0][1] = 3;
@@ -274,7 +274,7 @@ blue -> red = 4 -> 0
 
 				//System.out.print("possible tank : " + ct + " - tankID " + pt.tankId + " - angdiff = " + angDiff) ;
 				if(pt.isTracked == false){
-					if(Math.abs(angDiff) > 0.2){
+					if(Math.abs(angDiff) > 0.3){
 
 						pt.tankId = -1;
 						pt.isTracked = false;
@@ -326,7 +326,7 @@ blue -> red = 4 -> 0
 		for(int sx = area.x; sx < area.x + area.width; sx++){
 			for(int sy = area.y; sy < area.y + area.height; sy++){
 				int index = toNameIndex(in[sx + sy * 640]);
-				if(index != -1){
+				if(index >=0 && index <=5 && index != 3){
 					colourBinsX[index] += sx;
 					colourBinsY[index] += sy;
 					total[index]++;

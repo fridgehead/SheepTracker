@@ -184,6 +184,7 @@ public class SheepTest extends PApplet {
 			//opencv.copy(bgImage);
 			opencv.loadImage("data/sheep.jpg");
 		}
+		image(opencv.image(), 1200,0,160,120);
 		frame = opencv.image();
 		sheepFinder.setSettings(identSettings[6]);
 
@@ -191,6 +192,7 @@ public class SheepTest extends PApplet {
 		sheepFinder.cameraBlur = cameraBlur;
 		sheepFinder.update(frame);
 		
+
 		
 		
 		if(backgroundSubtractMode){

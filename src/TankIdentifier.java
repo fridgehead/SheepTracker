@@ -93,6 +93,7 @@ blue -> red = 4 -> 0
 	public void update(PImage blobframe, PImage colourFrame){
 		colourFrame.loadPixels();
 		trackList.clear();
+		finalTankList.clear();
 		//opencv.threshold(100, 0, OpenCV.THRESH_OTSU | OpenCV.THRESH_TOZERO);
 		Blob[] blobs = opencv.blobs( 5, 100000, 100, false, OpenCV.MAX_VERTICES*4 );
 		for( int i=0; i<blobs.length; i++ ) {
@@ -245,6 +246,10 @@ blue -> red = 4 -> 0
 									parent.rect( halfP.x+20, halfP.y + 30, 10,10);
 
 									//work out angle
+									Tank t = new Tank(id,new Point((int)halfP.x, (int)halfP.y), null);
+									t.heading = (int) parent.degrees(angle) + 90;
+									finalTankList.add(t);
+									
 
 								}
 							}

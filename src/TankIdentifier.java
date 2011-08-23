@@ -212,47 +212,53 @@ blue -> red = 4 -> 0
 
 
 									int id = 0;
-									int col = imageIn[(int)(src.x + normal.x)+(int)(src.y+ normal.y) * 640];
-									col = parent.color((col >> 16 ) & 0xFF ,(col >> 8 ) & 0xFF ,(col ) & 0xFF) ;
-									if(parent.brightness(col) > 100){
-										id |= 1;
-										parent.fill(255,255,255);
-									} else {
-										parent.fill(0);
+									
+									int[] cols = new int[3];
+									
+									cols[0] = imageIn[(int)(src.x + normal.x)+(int)(src.y+ normal.y) * 640];
+									cols[0] = parent.color((cols[0] >> 16 ) & 0xFF ,(cols[0] >> 8 ) & 0xFF ,(cols[0] ) & 0xFF) ;
+									
+									cols[1] = imageIn[(int)(halfP.x + normal.x)+ (int)(halfP.y+ normal.y) * 640];
+									cols[1] = parent.color((cols[1] >> 16 ) & 0xFF ,(cols[1] >> 8 ) & 0xFF ,(cols[1] ) & 0xFF) ;
+									
+
+									
+
+									cols[2] = imageIn[(int)(dst.x + normal.x)+ (int)(dst.y+ normal.y) * 640];
+									cols[2] = parent.color((cols[2] >> 16 ) & 0xFF ,(cols[2] >> 8 ) & 0xFF ,(cols[2] ) & 0xFF) ;
+									
+									
+									//work out the brightest and darkest, then the midpoint of these
+									
+									int maxB = 0;
+									int minB = 1000;
+									for(int i = 0; i < 3; i++){
+										if(maxB < parent.brightness(cols[i])){
+											maxB = (int) parent.brightness(cols[i]);
+										}
+										if(minB > parent.brightness(cols[i])){
+											minB  = (int)parent.brightness(cols[i]);
+										}
 									}
-
-									parent.rect( halfP.x, halfP.y+30, 10,10);
-
-
-
-									col = imageIn[(int)(halfP.x + normal.x)+ (int)(halfP.y+ normal.y) * 640];
-									col = parent.color((col >> 16 ) & 0xFF ,(col >> 8 ) & 0xFF ,(col ) & 0xFF) ;
-									if(parent.brightness(col) > 100){
-										id |= 2;
-										parent.fill(255,255,255);
-									} else {
-										parent.fill(0);
+								//	System.out.println("ma: " + maxB + " : " + minB);
+									
+									int bMidp = maxB - minB;
+									
+									for(int i = 0; i < 3; i++){
+										if(parent.brightness(cols[i]) > bMidp){
+											id |= (1 << i);
+											
+										}
 									}
-
-									parent.rect( halfP.x+10, halfP.y+ 30, 10,10);
-
-									col = imageIn[(int)(dst.x + normal.x)+ (int)(dst.y+ normal.y) * 640];
-									col = parent.color((col >> 16 ) & 0xFF ,(col >> 8 ) & 0xFF ,(col ) & 0xFF) ;
-									if(parent.brightness(col) > 100){
-										id |= 4;
-										parent.fill(255,255,255);
-									} else {
-										parent.fill(0);
-									}
-
-									parent.rect( halfP.x+20, halfP.y + 30, 10,10);
+									
+									
 
 									//work out angle
-									if(id == 1 || id == 5 || id == 6){
+									//if(id == 1 || id == 5 || id == 6){
 										Tank t = new Tank(id,new Point((int)halfP.x, (int)halfP.y), null);
 										t.heading = (int) parent.degrees(angle) + 90;
 										finalTankList.add(t);
-									}
+									//}
 									
 
 								}

@@ -196,8 +196,8 @@ public class FieldModel {
 			parent.rotate(t.desiredAngle);
 			parent.line(0,0,0,20);
 			parent.popMatrix();
-			parent.textFont(parent.myFont,10);
-			parent.text(t.tankId, (float)t.fieldPosition.getX(),(float)t.fieldPosition.getY());
+			parent.textFont(parent.niceFont,20);
+			parent.text(t.tankId, (float)t.fieldPosition.getX() + 20,(float)t.fieldPosition.getY() + 20);
 
 		}
 

@@ -50,7 +50,7 @@ public class TankIdentifier {
 	private PImage[] testbuf = new PImage[3];
 
 	PImage buf;
-	ArrayList<ColourPoint> trackList = new ArrayList<ColourPoint>();
+	public ArrayList<ColourPoint> trackList = new ArrayList<ColourPoint>();
 
 	/*
 	 * violet -> red  = 5 -> 0
@@ -95,13 +95,15 @@ blue -> red = 4 -> 0
 		trackList.clear();
 		finalTankList.clear();
 		//opencv.threshold(100, 0, OpenCV.THRESH_OTSU | OpenCV.THRESH_TOZERO);
-		Blob[] blobs = opencv.blobs( 5, 100000, 100, false, OpenCV.MAX_VERTICES*4 );
+		Blob[] blobs = opencv.blobs( identSettings[0].minBlobSize, identSettings[0].maxBlobSize, 100, false, OpenCV.MAX_VERTICES*4 );
 		for( int i=0; i<blobs.length; i++ ) {
 
 			Rectangle r = blobs[i].rectangle;
 			//parent.stroke(0,0,255);
 			//parent.rect(r.x,r.y,r.width,r.height);
 			ArrayList<ColourPoint> pts = findColourBlobs(colourFrame.pixels, r);
+			
+			
 			trackList.addAll(pts);
 
 		}
@@ -145,10 +147,10 @@ blue -> red = 4 -> 0
 
 		for(int i = 0; i < 3; i++){
 			testbuf[i].updatePixels();
-			opencv.remember();
+			//opencv.remember();
 			opencv.copy(testbuf[i]);
 			opencv.ROI(area);
-			Blob[] blobs = opencv.blobs( 2, 1000, 100, false, OpenCV.MAX_VERTICES*4 );
+			Blob[] blobs = opencv.blobs( 2, 4000, 100, false, OpenCV.MAX_VERTICES*4 );
 			for(Blob b :blobs){
 				ColourPoint l = new ColourPoint();
 				l.colourId = i;
@@ -246,9 +248,11 @@ blue -> red = 4 -> 0
 									parent.rect( halfP.x+20, halfP.y + 30, 10,10);
 
 									//work out angle
-									Tank t = new Tank(id,new Point((int)halfP.x, (int)halfP.y), null);
-									t.heading = (int) parent.degrees(angle) + 90;
-									finalTankList.add(t);
+									if(id == 1 || id == 5 || id == 6){
+										Tank t = new Tank(id,new Point((int)halfP.x, (int)halfP.y), null);
+										t.heading = (int) parent.degrees(angle) + 90;
+										finalTankList.add(t);
+									}
 									
 
 								}
@@ -310,6 +314,7 @@ blue -> red = 4 -> 0
 		public int colourId = 0;
 		public int colour = 0;
 		public Point pos;
+		public Point translatedPos;
 
 
 	}

@@ -6,6 +6,7 @@ public class IdentifierSettings {
 		public int minBlobSize = 0;
 		public int maxBlobSize = 0;
 		public int colourSampleArea = 10;
+		public boolean active = true;
 		
 		
 		

@@ -16,7 +16,7 @@ public class SheepTest extends PApplet {
 	Textarea logTextArea;
 	PImage frame;
 	Slider threshSlider, minSlider, maxSlider, sampleArea,saturationSlider, hueLowSlider, hueHighSlider;
-
+	CheckBox trackerStatusBox;
 	int currentEditing = 0;
 
 	SheepIdentifier sheepFinder;
@@ -37,6 +37,7 @@ public class SheepTest extends PApplet {
 	int cameraBlur = 6;
 
 	int maxTankSize = 10;
+	float toggle = 0.0f;
 	
 	public int mode = 0;
 	public static final int MODE_IDLE = 0;
@@ -101,6 +102,10 @@ public class SheepTest extends PApplet {
 
 
 		tankList = controlP5.addListBox("tankListBox",200,370,120,120);
+
+		trackerStatusBox = controlP5.addCheckBox("toggle",200,490);
+		trackerStatusBox.addItem("enabled", 1);
+
 		tankList.captionLabel().set("Which Thing?");
 
 		tankList.addItem("tank 0 - p1", 0);
@@ -233,6 +238,11 @@ public class SheepTest extends PApplet {
 				//text("p: " + t.pairId + "\n" + t.colourName, 340 + t.position.x, t.position.y);
 			}
 			
+			for(TankIdentifier.ColourPoint p: tankIdentifier.trackList){
+				fill(p.colour);
+				ellipse(p.pos.x + 330, p.pos.y, 10,10);
+			}
+			
 			
 		} else if (mode == MODE_CONFIG_SHEEP_SPACE) {
 			pushMatrix();
@@ -332,6 +342,12 @@ public class SheepTest extends PApplet {
 			identSettings[currentEditing].minBlobSize = minBlobSize;
 			identSettings[currentEditing].maxBlobSize = maxBlobSize;
 			identSettings[currentEditing].maxSaturation = saturationDetection;
+			/*if(trackerStatusBox.arrayValue()[0] == 1.0f){
+				identSettings[currentEditing].active = true;
+				
+			} else {
+				identSettings[currentEditing].active = false;
+			}*/
 			tankIdentifier.setIdentSettings(identSettings);
 		}
 
@@ -356,6 +372,15 @@ public class SheepTest extends PApplet {
 			saturationSlider.setValue(saturationDetection);
 			hueLowSlider.setValue(colourThreshLow);
 			hueHighSlider.setValue(colourThreshHigh);
+			
+			/*if(identSettings[currentEditing].active == true){
+				trackerStatusBox.activate(0);
+				
+			} else {
+				trackerStatusBox.deactivate(0);
+			}*/
+
+
 		}
 
 	}
